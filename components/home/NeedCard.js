@@ -9,7 +9,7 @@ import Colors from "../../constants/colors";
 const NeedCard = ({ item }) => {
   const TagList = () =>
     item.tags.map((tag, i) => (
-      <Tag active style={styles.tag} {...tag} key={i} />
+      <Tag active style={styles.tag} {...tag} key={i.toString()} />
     ));
 
   return (

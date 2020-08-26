@@ -5,7 +5,6 @@ import Tag from "../components/tag/Tag";
 import NeedCard from "../components/home/NeedCard";
 import Colors from "../constants/colors";
 import { needContext } from "../contexts/NeedProvider";
-import { SafeAreaView } from "react-native-safe-area-context";
 
 const initTags = [
   {
@@ -77,7 +76,7 @@ const HomeScreen = ({ navigation }) => {
   const needItem = ({ item }) => <NeedCard item={item} />;
 
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={styles.container}>
       <View style={styles.tagContainer}>
         <FlatList horizontal data={tags} renderItem={tagItem} />
       </View>
@@ -103,7 +102,7 @@ const HomeScreen = ({ navigation }) => {
       >
         <Icon name="add" />
       </Fab>
-    </SafeAreaView>
+    </View>
   );
 };
 
@@ -112,11 +111,11 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: Colors.background,
-    paddingTop: 8,
+    paddingTop: 35,
   },
   tagContainer: {
     marginBottom: 10,
-    paddingHorizontal,
+    paddingLeft: paddingHorizontal,
   },
   cardContainer: {
     paddingHorizontal,
