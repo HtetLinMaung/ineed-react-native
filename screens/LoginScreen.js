@@ -11,6 +11,10 @@ import Text from "../components/typography/Text";
 import Colors from "../constants/colors";
 
 const LoginScreen = ({ navigation }) => {
+  const loginHandler = () => {
+    navigation.navigate("Home");
+  };
+
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <View style={styles.container}>
@@ -37,10 +41,21 @@ const LoginScreen = ({ navigation }) => {
             </Text>
           </Button>
           <View style={styles.buttonContainer}>
-            <Button rounded block style={styles.loginBtn}>
+            <Button
+              rounded
+              block
+              style={styles.loginBtn}
+              onPress={loginHandler}
+            >
               <Text style={styles.btnText}>Login</Text>
             </Button>
-            <Button rounded block bordered style={styles.signupBtn}>
+            <Button
+              rounded
+              block
+              bordered
+              style={styles.signupBtn}
+              onPress={() => navigation.navigate("Signup")}
+            >
               <Text style={styles.btnTextSignup}>SignUp</Text>
             </Button>
           </View>

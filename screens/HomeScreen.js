@@ -48,7 +48,7 @@ const HomeScreen = ({ navigation }) => {
       }
     }
 
-    setTags(uniqueInitTags.map((v, i) => ({ ...v, key: (++i).toString() })));
+    setTags(uniqueInitTags.map((v, i) => ({ ...v, key: ++i + "" })));
   }, []);
 
   const pressHandler = (index) => {
