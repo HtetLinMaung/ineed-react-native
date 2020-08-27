@@ -19,7 +19,7 @@ const Navigator = () => {
   return (
     <SafeAreaProvider>
       <NavigationContainer>
-        <Stack.Navigator initialRouteName="Home">{screens}</Stack.Navigator>
+        <Stack.Navigator initialRouteName="Login">{screens}</Stack.Navigator>
       </NavigationContainer>
     </SafeAreaProvider>
   );

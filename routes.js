@@ -1,5 +1,6 @@
 import HomeScreen from "./screens/HomeScreen";
 import CreateNeedScreen from "./screens/CreateNeedScreen";
+import LoginScreen from "./screens/LoginScreen";
 
 export default [
   {
@@ -10,6 +11,11 @@ export default [
   {
     name: "CreateNeed",
     component: CreateNeedScreen,
+    options: { headerShown: false },
+  },
+  {
+    name: "Login",
+    component: LoginScreen,
     options: { headerShown: false },
   },
 ];
