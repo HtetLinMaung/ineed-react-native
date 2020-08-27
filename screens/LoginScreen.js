@@ -29,19 +29,21 @@ const LoginScreen = ({ navigation }) => {
           </Item>
           <Text style={styles.label}>Password</Text>
           <Item regular style={styles.inputContainer}>
-            <Input style={styles.input} />
+            <Input secureTextEntry style={styles.input} />
           </Item>
           <Button transparent>
             <Text style={{ ...styles.label, fontSize: 12 }}>
               Forget Password?
             </Text>
           </Button>
-          <Button rounded block style={styles.loginBtn}>
-            <Text style={styles.btnText}>Login</Text>
-          </Button>
-          <Button rounded block bordered style={styles.signupBtn}>
-            <Text style={styles.btnTextSignup}>SignUp</Text>
-          </Button>
+          <View style={styles.buttonContainer}>
+            <Button rounded block style={styles.loginBtn}>
+              <Text style={styles.btnText}>Login</Text>
+            </Button>
+            <Button rounded block bordered style={styles.signupBtn}>
+              <Text style={styles.btnTextSignup}>SignUp</Text>
+            </Button>
+          </View>
         </View>
       </View>
     </TouchableWithoutFeedback>
@@ -52,9 +54,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "white",
-    // paddingTop: 30,
-    // paddingHorizontal: 20,
-    // justifyContent: "center",
+    paddingTop: "18%",
     alignItems: "stretch",
   },
   header: {
@@ -81,7 +81,8 @@ const styles = StyleSheet.create({
   },
   loginBtn: {
     marginVertical: 10,
-    backgroundColor: Colors.pink,
+    backgroundColor: Colors.label,
+    width: "40%",
   },
   btnText: {
     fontSize: 15,
@@ -90,6 +91,7 @@ const styles = StyleSheet.create({
   signupBtn: {
     marginVertical: 10,
     borderColor: Colors.label,
+    width: "40%",
   },
   btnTextSignup: {
     fontSize: 15,
@@ -100,7 +102,11 @@ const styles = StyleSheet.create({
     height: 300,
   },
   formContainer: {
-    paddingHorizontal: 10,
+    paddingHorizontal: 30,
+  },
+  buttonContainer: {
+    flexDirection: "row",
+    justifyContent: "space-around",
   },
 });
 
