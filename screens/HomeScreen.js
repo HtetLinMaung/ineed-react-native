@@ -1,5 +1,5 @@
 import React, { useContext, useState, useEffect } from "react";
-import { View, StyleSheet, FlatList } from "react-native";
+import { View, StyleSheet, FlatList, Image } from "react-native";
 import { Icon, Fab } from "native-base";
 import Tag from "../components/tag/Tag";
 import NeedCard from "../components/home/NeedCard";
@@ -64,6 +64,13 @@ const HomeScreen = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
+      <View style={styles.profileContainer}>
+        <Icon name="ios-menu" />
+        <Image
+          style={styles.avatar}
+          source={require("../assets/images/avatar-placeholder.webp")}
+        />
+      </View>
       <View style={styles.tagContainer}>
         <FlatList horizontal data={tags} renderItem={tagItem} />
       </View>
@@ -94,6 +101,7 @@ const HomeScreen = ({ navigation }) => {
 };
 
 const paddingHorizontal = 20;
+const size = 30;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -109,6 +117,17 @@ const styles = StyleSheet.create({
   },
   fab: {
     backgroundColor: Colors.fab,
+  },
+  profileContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    paddingHorizontal: 25,
+    marginBottom: 15,
+  },
+  avatar: {
+    width: size,
+    height: size,
+    borderRadius: size / 2,
   },
 });
 
