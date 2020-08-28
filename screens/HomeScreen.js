@@ -6,22 +6,9 @@ import NeedCard from "../components/home/NeedCard";
 import Colors from "../constants/colors";
 import { needContext } from "../contexts/NeedProvider";
 
-const initTags = [
-  {
-    title: "All",
-    color: "white",
-    active: true,
-  },
-  {
-    title: "Office",
-    color: Colors.purple,
-    active: false,
-  },
-].map((v, i) => ({ ...v, key: ++i }));
-
 const HomeScreen = ({ navigation }) => {
   const [needs] = useContext(needContext);
-  const [tags, setTags] = useState(initTags);
+  const [tags, setTags] = useState([]);
   const [currentTag, setCurrentTag] = useState(0);
 
   useEffect(() => {

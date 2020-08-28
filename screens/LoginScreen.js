@@ -27,7 +27,7 @@ const LoginScreen = ({ navigation }) => {
           source={require("../assets/images/sign_in.png")}
         />
         <View style={styles.formContainer}>
-          <Text style={styles.label}>Username</Text>
+          <Text style={styles.label}>Email</Text>
           <Item regular style={styles.inputContainer}>
             <Input style={styles.input} />
           </Item>
@@ -69,8 +69,8 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "white",
-    paddingTop: "18%",
     alignItems: "stretch",
+    justifyContent: "center",
   },
   header: {
     fontSize: 35,
