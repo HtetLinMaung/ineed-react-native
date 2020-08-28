@@ -13,7 +13,7 @@ import Colors from "../constants/colors";
 
 const SignUpScreen = ({ navigation }) => {
   const signupHandler = () => {
-    navigation.navigate("Login");
+    navigation.navigate("BasicInfo");
   };
 
   return (
@@ -23,18 +23,6 @@ const SignUpScreen = ({ navigation }) => {
           style={styles.image}
           source={require("../assets/images/join.png")}
         />
-        {/* <View style={styles.avatarContainer}>
-          <TouchableOpacity>
-            <Image
-              style={styles.avatar}
-              source={require("../assets/images/avatar-placeholder.webp")}
-            />
-          </TouchableOpacity>
-        </View>
-        <Text style={styles.label}>Username</Text>
-        <Item regular style={styles.inputContainer}>
-          <Input style={styles.input} />
-        </Item> */}
         <Text bold style={styles.header}>
           Sign Up
         </Text>
@@ -65,7 +53,6 @@ const SignUpScreen = ({ navigation }) => {
   );
 };
 
-const size = 100;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -84,11 +71,6 @@ const styles = StyleSheet.create({
     width: "100%",
     height: 300,
   },
-  // avatar: {
-  //   width: size,
-  //   height: size,
-  //   borderRadius: size / 2,
-  // },
   inputContainer: {
     borderRadius: 15,
     height: 40,
@@ -105,11 +87,6 @@ const styles = StyleSheet.create({
     paddingLeft: 5,
     color: Colors.label,
   },
-  // avatarContainer: {
-  //   flexDirection: "row",
-  //   justifyContent: "center",
-  //   marginBottom: 20,
-  // },
   signupBtn: {
     marginVertical: 10,
     backgroundColor: Colors.label,
