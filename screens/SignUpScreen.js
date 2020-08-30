@@ -3,7 +3,6 @@ import {
   View,
   StyleSheet,
   Image,
-  TouchableOpacity,
   TouchableWithoutFeedback,
   Keyboard,
 } from "react-native";
@@ -63,7 +62,6 @@ const styles = StyleSheet.create({
   },
   header: {
     fontSize: 35,
-    color: Colors.label,
     textAlign: "center",
     marginBottom: 10,
   },
@@ -85,7 +83,6 @@ const styles = StyleSheet.create({
     fontSize: 14,
     marginBottom: 6,
     paddingLeft: 5,
-    color: Colors.label,
   },
   signupBtn: {
     marginVertical: 10,

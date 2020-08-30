@@ -65,7 +65,7 @@ const HomeScreen = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <View style={styles.profileContainer}>
-        <Icon name="ios-menu" />
+        <Icon name="ios-menu" style={styles.icon} />
         <Image
           style={styles.avatar}
           source={require("../assets/images/avatar-placeholder.webp")}
@@ -128,6 +128,9 @@ const styles = StyleSheet.create({
     width: size,
     height: size,
     borderRadius: size / 2,
+  },
+  icon: {
+    color: Colors.label,
   },
 });
 

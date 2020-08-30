@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useState } from "react";
+import * as ImagePicker from "expo-image-picker";
 import {
   View,
   TouchableWithoutFeedback,
@@ -12,9 +13,43 @@ import Text from "../components/typography/Text";
 import Colors from "../constants/colors";
 
 const BasicInfoScreen = ({ navigation }) => {
+  const [image, setImage] = useState(null);
+
+  const pickImage = async () => {
+    try {
+      let permissionResult = await ImagePicker.requestCameraRollPermissionsAsync();
+
+      if (permissionResult.granted === false) {
+        alert("Permission to access camera roll is required!");
+        return;
+      }
+
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        quality: 1,
+      });
+      if (!result.cancelled) {
+        setImage(result.uri);
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   const continueHandler = () => {
     navigation.navigate("Home");
   };
+
+  const ImageComponent = () =>
+    !image ? (
+      <Image
+        style={styles.avatar}
+        source={require("../assets/images/avatar-placeholder.webp")}
+      />
+    ) : (
+      <Image style={styles.avatar} source={{ uri: image }} />
+    );
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
@@ -23,11 +58,8 @@ const BasicInfoScreen = ({ navigation }) => {
           Basic Info
         </Text>
         <View style={styles.avatarContainer}>
-          <TouchableOpacity>
-            <Image
-              style={styles.avatar}
-              source={require("../assets/images/avatar-placeholder.webp")}
-            />
+          <TouchableOpacity onPress={pickImage}>
+            <ImageComponent />
           </TouchableOpacity>
         </View>
 
@@ -79,7 +111,6 @@ const styles = StyleSheet.create({
     marginBottom: 6,
     paddingLeft: 5,
     textAlign: "center",
-    color: Colors.label,
   },
   avatar: {
     width: size,
@@ -93,7 +124,6 @@ const styles = StyleSheet.create({
   },
   header: {
     fontSize: 35,
-    color: Colors.label,
     textAlign: "center",
     marginBottom: 10,
   },

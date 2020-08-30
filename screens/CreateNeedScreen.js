@@ -127,7 +127,6 @@ const styles = StyleSheet.create({
   header: {
     fontSize: 24,
     marginBottom: 15,
-    color: Colors.label,
   },
   inputContainer: {
     borderRadius: 15,
@@ -143,7 +142,6 @@ const styles = StyleSheet.create({
     fontSize: 14,
     marginBottom: 6,
     paddingLeft: 5,
-    color: Colors.label,
   },
   textarea: {
     borderColor: Colors.label,

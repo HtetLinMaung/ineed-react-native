@@ -1,5 +1,12 @@
-import React from "react";
-import { Image, StyleSheet, View } from "react-native";
+import React, { useRef } from "react";
+import {
+  Image,
+  StyleSheet,
+  View,
+  TouchableWithoutFeedback,
+  Animated,
+  Vibration,
+} from "react-native";
 import Text from "../typography/Text";
 import Tag from "../tag/Tag";
 import PropTypes from "prop-types";
@@ -7,38 +14,87 @@ import moment from "moment";
 import Colors from "../../constants/colors";
 
 const NeedCard = ({ item }) => {
+  const scaleAnimation = useRef(new Animated.Value(1)).current;
+
+  const scaleStyle = {
+    transform: [
+      {
+        scale: scaleAnimation,
+      },
+    ],
+  };
+
   const TagList = () =>
     item.tags.map((tag, i) => (
       <Tag active style={styles.tag} {...tag} key={i.toString()} />
     ));
 
+  const toDetail = () => {
+    Animated.timing(scaleAnimation, {
+      toValue: 0.95,
+      duration: 150,
+      useNativeDriver: true,
+    }).start(({ finished }) => {
+      if (finished) {
+        Animated.timing(scaleAnimation, {
+          toValue: 1,
+          duration: 150,
+          useNativeDriver: true,
+        }).start();
+      }
+    });
+  };
+
+  const resetAnimation = () => {
+    Animated.timing(scaleAnimation, {
+      toValue: 1,
+      duration: 150,
+      useNativeDriver: true,
+    }).start();
+  };
+
+  const showSettings = () => {
+    Animated.timing(scaleAnimation, {
+      toValue: 0.95,
+      duration: 100,
+      useNativeDriver: true,
+    }).start();
+    Vibration.vibrate(1);
+  };
+
   return (
-    <View style={styles.card}>
-      <View style={styles.cardHeader}>
-        <Image
-          style={styles.avatar}
-          source={require("../../assets/images/avatar.jpg")}
-        />
-        <Text style={styles.username}>{item.username}</Text>
-        <Text style={styles.createDate}>
-          {moment(item.createdAt).format("DD.MM.YYYY")}
-        </Text>
-      </View>
-      <View style={styles.cardBody}>
-        <View style={styles.tagContainer}>
-          <TagList />
+    <TouchableWithoutFeedback
+      onPress={toDetail}
+      onPressOut={resetAnimation}
+      onLongPress={showSettings}
+    >
+      <Animated.View style={[styles.card, scaleStyle]}>
+        <View style={styles.cardHeader}>
+          <Image
+            style={styles.avatar}
+            source={require("../../assets/images/avatar.jpg")}
+          />
+          <Text style={styles.username}>{item.username}</Text>
+          <Text style={styles.createDate}>
+            {moment(item.createdAt).format("DD.MM.YYYY")}
+          </Text>
         </View>
-        <Text style={styles.header} bold>
-          {item.header}
-        </Text>
-        <Text>{item.body}</Text>
-      </View>
-      <View style={styles.cardFooter}>
-        <Text style={{ ...styles.status, color: Colors.Status[item.status] }}>
-          {item.status}
-        </Text>
-      </View>
-    </View>
+        <View style={styles.cardBody}>
+          <View style={styles.tagContainer}>
+            <TagList />
+          </View>
+          <Text style={styles.header} bold>
+            {item.header}
+          </Text>
+          <Text>{item.body}</Text>
+        </View>
+        <View style={styles.cardFooter}>
+          <Text style={{ ...styles.status, color: Colors.Status[item.status] }}>
+            {item.status}
+          </Text>
+        </View>
+      </Animated.View>
+    </TouchableWithoutFeedback>
   );
 };
 
