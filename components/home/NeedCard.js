@@ -6,15 +6,67 @@ import {
   TouchableWithoutFeedback,
   Animated,
   Vibration,
+  Alert,
 } from "react-native";
 import Text from "../typography/Text";
 import Tag from "../tag/Tag";
+import SheetMenuBody from "../home/SheetMenuBody";
 import PropTypes from "prop-types";
 import moment from "moment";
 import Colors from "../../constants/colors";
+import RBSheet from "react-native-raw-bottom-sheet";
+import { useNavigation } from "@react-navigation/native";
 
 const NeedCard = ({ item }) => {
+  const navigation = useNavigation();
   const scaleAnimation = useRef(new Animated.Value(1)).current;
+  const refRBSheet = useRef();
+
+  const menus = [
+    {
+      icon: "ios-eye-off",
+      text: "Hide",
+      onPress: () => {
+        refRBSheet.current.close();
+      },
+    },
+    {
+      icon: "ios-arrow-dropdown",
+      text: "Detail",
+      onPress: () => {
+        refRBSheet.current.close();
+        navigation.navigate("NeedDetail");
+      },
+    },
+    {
+      icon: "ios-color-fill",
+      text: "Edit",
+      onPress: () => {
+        refRBSheet.current.close();
+        navigation.navigate("EditNeed");
+      },
+    },
+    {
+      icon: "ios-trash",
+      text: "Delete",
+      onPress: () => {
+        refRBSheet.current.close();
+        Alert.alert(
+          "Are you sure?",
+          "This will delete permenantly from Database!",
+          [
+            {
+              text: "Cancel",
+              onPress: () => console.log("Cancel Pressed"),
+              style: "cancel",
+            },
+            { text: "OK", onPress: () => console.log("OK Pressed") },
+          ],
+          { cancelable: true }
+        );
+      },
+    },
+  ];
 
   const scaleStyle = {
     transform: [
@@ -40,7 +92,9 @@ const NeedCard = ({ item }) => {
           toValue: 1,
           duration: 150,
           useNativeDriver: true,
-        }).start();
+        }).start(({ finished }) => {
+          navigation.navigate("NeedDetail");
+        });
       }
     });
   };
@@ -60,6 +114,7 @@ const NeedCard = ({ item }) => {
       useNativeDriver: true,
     }).start();
     Vibration.vibrate(1);
+    refRBSheet.current.open();
   };
 
   return (
@@ -93,6 +148,21 @@ const NeedCard = ({ item }) => {
             {item.status}
           </Text>
         </View>
+        <RBSheet
+          ref={refRBSheet}
+          closeOnDragDown={true}
+          height={70}
+          customStyles={{
+            wrapper: {
+              backgroundColor: "transparent",
+            },
+            draggableIcon: {
+              backgroundColor: "#000",
+            },
+          }}
+        >
+          <SheetMenuBody menus={menus} />
+        </RBSheet>
       </Animated.View>
     </TouchableWithoutFeedback>
   );
