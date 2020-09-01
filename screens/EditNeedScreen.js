@@ -6,12 +6,13 @@ import {
   Keyboard,
   TouchableOpacity,
 } from "react-native";
-import { Input, Item, Textarea, Icon, Button } from "native-base";
+import { Input, Item, Textarea, Icon, Button, CheckBox } from "native-base";
 import Text from "../components/typography/Text";
 import Tag from "../components/tag/Tag";
 import Colors from "../constants/colors";
 
-const CreateNeedScreen = ({ navigation }) => {
+const EditNeedScreen = ({ navigation }) => {
+  const [isSatisfied, setIsSatisfied] = useState(false);
   const [tagColors, setTagColors] = useState(
     Colors.tags.map((color, i) => ({ color, selected: i > 0 ? false : true }))
   );
@@ -48,7 +49,7 @@ const CreateNeedScreen = ({ navigation }) => {
     setTags((currentState) => currentState.filter((item) => item.id != id));
   };
 
-  const saveHandler = () => {
+  const updateHandler = () => {
     navigation.navigate("Home");
   };
 
@@ -81,9 +82,17 @@ const CreateNeedScreen = ({ navigation }) => {
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <View style={styles.container}>
-        <Text bold style={styles.header}>
-          Propose Need
-        </Text>
+        <View style={styles.headerContainer}>
+          <Text bold style={styles.header}>
+            Edit Need
+          </Text>
+          <CheckBox
+            checked={isSatisfied}
+            onPress={() => setIsSatisfied((state) => !state)}
+            color={Colors.label}
+            style={styles.checkbox}
+          />
+        </View>
 
         <Text style={styles.label}>Title</Text>
         <Item regular style={styles.inputContainer}>
@@ -108,8 +117,8 @@ const CreateNeedScreen = ({ navigation }) => {
         <View style={styles.tagContainer}>
           <TagList />
         </View>
-        <Button block rounded style={styles.button} onPress={saveHandler}>
-          <Text style={styles.buttonText}>Save</Text>
+        <Button block rounded style={styles.button} onPress={updateHandler}>
+          <Text style={styles.buttonText}>Update</Text>
         </Button>
       </View>
     </TouchableWithoutFeedback>
@@ -126,7 +135,13 @@ const styles = StyleSheet.create({
   },
   header: {
     fontSize: 24,
+  },
+  headerContainer: {
     marginBottom: 15,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingRight: 13,
   },
   inputContainer: {
     borderRadius: 15,
@@ -183,6 +198,13 @@ const styles = StyleSheet.create({
     fontSize: 15,
     color: "white",
   },
+  checkbox: {
+    transform: [
+      {
+        scale: 0.8,
+      },
+    ],
+  },
 });
 
-export default CreateNeedScreen;
+export default EditNeedScreen;

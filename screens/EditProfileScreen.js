@@ -12,7 +12,7 @@ import { Item, Input, Button } from "native-base";
 import Text from "../components/typography/Text";
 import Colors from "../constants/colors";
 
-const BasicInfoScreen = ({ navigation }) => {
+const EditProfileScreen = ({ navigation }) => {
   const [image, setImage] = useState(null);
 
   const pickImage = async () => {
@@ -37,7 +37,7 @@ const BasicInfoScreen = ({ navigation }) => {
     }
   };
 
-  const continueHandler = () => {
+  const updateHandler = () => {
     navigation.navigate("Home");
   };
 
@@ -55,7 +55,7 @@ const BasicInfoScreen = ({ navigation }) => {
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <View style={styles.container}>
         <Text bold style={styles.header}>
-          Basic Info
+          Profile
         </Text>
         <View style={styles.avatarContainer}>
           <TouchableOpacity onPress={pickImage}>
@@ -76,9 +76,9 @@ const BasicInfoScreen = ({ navigation }) => {
             rounded
             block
             style={styles.continueBtn}
-            onPress={continueHandler}
+            onPress={updateHandler}
           >
-            <Text style={styles.btnText}>Continue</Text>
+            <Text style={styles.btnText}>Update</Text>
           </Button>
         </View>
       </View>
@@ -142,4 +142,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default BasicInfoScreen;
+export default EditProfileScreen;

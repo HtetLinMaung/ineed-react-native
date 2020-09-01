@@ -74,7 +74,6 @@ const styles = StyleSheet.create({
   },
   header: {
     fontSize: 35,
-    color: Colors.label,
     textAlign: "center",
     marginBottom: 20,
   },
@@ -92,7 +91,6 @@ const styles = StyleSheet.create({
     fontSize: 14,
     marginBottom: 6,
     paddingLeft: 5,
-    color: Colors.label,
   },
   loginBtn: {
     marginVertical: 10,

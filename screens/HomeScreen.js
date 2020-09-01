@@ -5,6 +5,13 @@ import Tag from "../components/tag/Tag";
 import NeedCard from "../components/home/NeedCard";
 import Colors from "../constants/colors";
 import { needContext } from "../contexts/NeedProvider";
+import Text from "../components/typography/Text";
+import {
+  Menu,
+  MenuOptions,
+  MenuOption,
+  MenuTrigger,
+} from "react-native-popup-menu";
 
 const HomeScreen = ({ navigation }) => {
   const [needs] = useContext(needContext);
@@ -51,6 +58,10 @@ const HomeScreen = ({ navigation }) => {
     setCurrentTag(index);
   };
 
+  const logoutHandler = () => {
+    navigation.navigate("Login");
+  };
+
   const tagItem = ({ item, index }) => (
     <Tag
       title={item.title}
@@ -65,11 +76,23 @@ const HomeScreen = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <View style={styles.profileContainer}>
-        <Icon name="ios-menu" />
-        <Image
-          style={styles.avatar}
-          source={require("../assets/images/avatar-placeholder.webp")}
-        />
+        <Icon name="ios-menu" style={styles.icon} />
+        <Menu>
+          <MenuTrigger>
+            <Image
+              style={styles.avatar}
+              source={require("../assets/images/avatar-placeholder.webp")}
+            />
+          </MenuTrigger>
+          <MenuOptions customStyles={optionsStyles}>
+            <MenuOption onSelect={() => navigation.navigate("EditProfile")}>
+              <Text>Edit Profile</Text>
+            </MenuOption>
+            <MenuOption onSelect={logoutHandler}>
+              <Text>Logout</Text>
+            </MenuOption>
+          </MenuOptions>
+        </Menu>
       </View>
       <View style={styles.tagContainer}>
         <FlatList horizontal data={tags} renderItem={tagItem} />
@@ -101,7 +124,8 @@ const HomeScreen = ({ navigation }) => {
 };
 
 const paddingHorizontal = 20;
-const size = 30;
+const size = 22;
+const radius = 15;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -129,6 +153,18 @@ const styles = StyleSheet.create({
     height: size,
     borderRadius: size / 2,
   },
+  icon: {
+    color: Colors.label,
+    fontSize: 22,
+  },
 });
+
+const optionsStyles = {
+  optionsContainer: {
+    padding: 5,
+    borderRadius: 15,
+    width: 100,
+  },
+};
 
 export default HomeScreen;

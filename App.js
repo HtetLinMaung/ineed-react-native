@@ -5,6 +5,7 @@ import { AppLoading } from "expo";
 import { useFonts } from "expo-font";
 import Navigator from "./components/Navigator";
 import { Ionicons } from "@expo/vector-icons";
+import { MenuProvider } from "react-native-popup-menu";
 
 export default function App() {
   const [fontsLoaded] = useFonts({
@@ -21,7 +22,9 @@ export default function App() {
 
   return (
     <NeedProvider>
-      <Navigator />
+      <MenuProvider>
+        <Navigator />
+      </MenuProvider>
     </NeedProvider>
   );
 }

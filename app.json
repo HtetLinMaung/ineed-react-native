@@ -15,7 +15,13 @@
     },
     "assetBundlePatterns": ["**/*"],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.yourcompany.yourappname",
+      "buildNumber": "1.0.0"
+    },
+    "android": {
+      "package": "com.htetlinmaung.iNeed",
+      "versionCode": 1
     },
     "web": {
       "favicon": "./assets/favicon.png"

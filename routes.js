@@ -3,6 +3,9 @@ import CreateNeedScreen from "./screens/CreateNeedScreen";
 import LoginScreen from "./screens/LoginScreen";
 import SignUpScreen from "./screens/SignUpScreen";
 import BasicInfoScreen from "./screens/BasicInfoScreen";
+import EditNeedScreen from "./screens/EditNeedScreen";
+import NeedDetailScreen from "./screens/NeedDetailScreen";
+import EditProfileScreen from "./screens/EditProfileScreen";
 
 export default [
   {
@@ -13,6 +16,11 @@ export default [
   {
     name: "CreateNeed",
     component: CreateNeedScreen,
+    options: { headerShown: false },
+  },
+  {
+    name: "EditNeed",
+    component: EditNeedScreen,
     options: { headerShown: false },
   },
   {
@@ -28,6 +36,16 @@ export default [
   {
     name: "BasicInfo",
     component: BasicInfoScreen,
+    options: { headerShown: false },
+  },
+  {
+    name: "NeedDetail",
+    component: NeedDetailScreen,
+    options: { headerShown: false },
+  },
+  {
+    name: "EditProfile",
+    component: EditProfileScreen,
     options: { headerShown: false },
   },
 ];
