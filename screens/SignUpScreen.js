@@ -18,6 +18,30 @@ const SignUpScreen = ({ navigation }) => {
   const [isPassword, setIsPassword] = useState("");
   const [isConfirm, setIsConfirm] = useState("");
 
+  const emailChangeHandler = (text) => {
+    setIsEmail(true);
+    if (!text) {
+      setIsEmail(false);
+    }
+    setEmail(text);
+  };
+
+  const passwordChangeHandler = (text) => {
+    setIsPassword(true);
+    if (!text) {
+      setIsPassword(false);
+    }
+    setPassword(text);
+  };
+
+  const confirmChangeHandler = () => {
+    setIsConfirm(true);
+    if (!text) {
+      setIsConfirm(false);
+    }
+    setConfirm(text);
+  };
+
   const signupHandler = () => {
     navigation.navigate("BasicInfo");
   };
@@ -33,19 +57,52 @@ const SignUpScreen = ({ navigation }) => {
           Sign Up
         </Text>
         <Text style={styles.label}>Email</Text>
-        <Item regular style={styles.inputContainer}>
-          <Input style={styles.input} />
+        <Item
+          regular
+          style={[
+            styles.inputContainer,
+            { borderColor: !isEmail ? "red" : Colors.label },
+          ]}
+        >
+          <Input
+            style={styles.input}
+            value={email}
+            onChangeText={emailChangeHandler}
+          />
         </Item>
         <Text style={styles.label}>Password</Text>
-        <Item regular style={styles.inputContainer}>
-          <Input secureTextEntry style={styles.input} />
+        <Item
+          regular
+          style={[
+            styles.inputContainer,
+            { borderColor: !isPassword ? "red" : Colors.label },
+          ]}
+        >
+          <Input
+            secureTextEntry
+            style={styles.input}
+            value={password}
+            onChangeText={passwordChangeHandler}
+          />
         </Item>
         <Text style={styles.label}>Confirm Password</Text>
-        <Item regular style={styles.inputContainer}>
-          <Input secureTextEntry style={styles.input} />
+        <Item
+          regular
+          style={[
+            styles.inputContainer,
+            { borderColor: !isConfirm ? "red" : Colors.label },
+          ]}
+        >
+          <Input
+            secureTextEntry
+            style={styles.input}
+            value={confirm}
+            onChangeText={confirmChangeHandler}
+          />
         </Item>
         <View style={styles.btnContainer}>
           <Button
+            disabled={!email || !password || password != confirm}
             rounded
             block
             style={styles.signupBtn}
@@ -79,7 +136,6 @@ const styles = StyleSheet.create({
   inputContainer: {
     borderRadius: 15,
     height: 40,
-    borderColor: Colors.label,
     marginBottom: 20,
   },
   input: {
