@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   View,
   StyleSheet,
@@ -11,6 +11,13 @@ import Text from "../components/typography/Text";
 import Colors from "../constants/colors";
 
 const SignUpScreen = ({ navigation }) => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirm, setConfirm] = useState("");
+  const [isEmail, setIsEmail] = useState("");
+  const [isPassword, setIsPassword] = useState("");
+  const [isConfirm, setIsConfirm] = useState("");
+
   const signupHandler = () => {
     navigation.navigate("BasicInfo");
   };

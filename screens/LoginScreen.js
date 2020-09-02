@@ -1,18 +1,68 @@
-import React from "react";
+import React, { useState, useContext } from "react";
 import {
   View,
   StyleSheet,
   TouchableWithoutFeedback,
   Keyboard,
   Image,
+  Alert,
 } from "react-native";
 import { Item, Input, Button } from "native-base";
 import Text from "../components/typography/Text";
 import Colors from "../constants/colors";
+import Spinner from "../components/spinner/Spinner";
+import { host } from "../constants/api";
+import { appContext } from "../contexts/AppProvider";
 
 const LoginScreen = ({ navigation }) => {
-  const loginHandler = () => {
-    navigation.navigate("Home");
+  const [, dispatch] = useContext(appContext);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [isEmail, setIsEmail] = useState(true);
+  const [isPassword, setIsPassword] = useState(true);
+
+  const emailChangeHandler = (text) => {
+    setIsEmail(true);
+    if (!text) {
+      setIsEmail(false);
+    }
+    setEmail(text);
+  };
+
+  const passwordChangeHandler = (text) => {
+    setIsPassword(true);
+    if (!text) {
+      setIsPassword(false);
+    }
+    setPassword(text);
+  };
+
+  const loginHandler = async () => {
+    try {
+      if (email && password) {
+        console.log(email, password);
+        dispatch({ type: "TOGGLE_LOADING" });
+        const response = await fetch(`${host}/auth/login`, {
+          method: "POST",
+          body: JSON.stringify({
+            email,
+            password,
+          }),
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }).then((res) => res.json());
+        dispatch({ type: "TOGGLE_LOADING" });
+        console.log(response);
+        if (!response.status) {
+          Alert.alert(response.message);
+          return;
+        }
+        navigation.navigate("Home");
+      }
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   return (
@@ -21,19 +71,39 @@ const LoginScreen = ({ navigation }) => {
         <Text style={styles.header} bold>
           Login
         </Text>
-
         <Image
           style={styles.image}
           source={require("../assets/images/sign_in.png")}
         />
         <View style={styles.formContainer}>
           <Text style={styles.label}>Email</Text>
-          <Item regular style={styles.inputContainer}>
-            <Input style={styles.input} />
+          <Item
+            regular
+            style={[
+              styles.inputContainer,
+              { borderColor: !isEmail ? "red" : Colors.label },
+            ]}
+          >
+            <Input
+              style={styles.input}
+              value={email}
+              onChangeText={emailChangeHandler}
+            />
           </Item>
           <Text style={styles.label}>Password</Text>
-          <Item regular style={styles.inputContainer}>
-            <Input secureTextEntry style={styles.input} />
+          <Item
+            regular
+            style={[
+              styles.inputContainer,
+              { borderColor: !isPassword ? "red" : Colors.label },
+            ]}
+          >
+            <Input
+              secureTextEntry
+              style={styles.input}
+              value={password}
+              onChangeText={passwordChangeHandler}
+            />
           </Item>
           <Button transparent>
             <Text style={{ ...styles.label, fontSize: 12 }}>
@@ -42,6 +112,7 @@ const LoginScreen = ({ navigation }) => {
           </Button>
           <View style={styles.buttonContainer}>
             <Button
+              disabled={!email || !password}
               rounded
               block
               style={styles.loginBtn}
@@ -60,6 +131,7 @@ const LoginScreen = ({ navigation }) => {
             </Button>
           </View>
         </View>
+        <Spinner />
       </View>
     </TouchableWithoutFeedback>
   );
@@ -80,7 +152,6 @@ const styles = StyleSheet.create({
   inputContainer: {
     borderRadius: 15,
     height: 40,
-    borderColor: Colors.label,
     marginBottom: 20,
   },
   input: {

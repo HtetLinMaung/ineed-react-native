@@ -1,4 +1,5 @@
-import React from "react";
+import React, { Fragment } from "react";
+import AppProvider from "./contexts/AppProvider";
 import NeedProvider from "./contexts/NeedProvider";
 import { StyleSheet } from "react-native";
 import { AppLoading } from "expo";
@@ -21,11 +22,13 @@ export default function App() {
   }
 
   return (
-    <NeedProvider>
-      <MenuProvider>
-        <Navigator />
-      </MenuProvider>
-    </NeedProvider>
+    <AppProvider>
+      <NeedProvider>
+        <MenuProvider>
+          <Navigator />
+        </MenuProvider>
+      </NeedProvider>
+    </AppProvider>
   );
 }
 
