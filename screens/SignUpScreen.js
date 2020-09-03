@@ -1,22 +1,29 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import {
   View,
   StyleSheet,
   Image,
   TouchableWithoutFeedback,
   Keyboard,
+  Alert,
 } from "react-native";
-import { Item, Input, Button } from "native-base";
+import { Button } from "native-base";
 import Text from "../components/typography/Text";
 import Colors from "../constants/colors";
+import TextInput from "../components/form/TextInput";
+import { host } from "../constants/api";
+import { appContext } from "../contexts/AppProvider";
+import Spinner from "../components/spinner/Spinner";
 
 const SignUpScreen = ({ navigation }) => {
+  const [, dispatch] = useContext(appContext);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
-  const [isEmail, setIsEmail] = useState("");
-  const [isPassword, setIsPassword] = useState("");
-  const [isConfirm, setIsConfirm] = useState("");
+  const [isEmail, setIsEmail] = useState(true);
+  const [isPassword, setIsPassword] = useState(true);
+  const [isConfirm, setIsConfirm] = useState(true);
+  const [confirmErrLabel, setConfirmErrLabel] = useState("");
 
   const emailChangeHandler = (text) => {
     setIsEmail(true);
@@ -34,16 +41,43 @@ const SignUpScreen = ({ navigation }) => {
     setPassword(text);
   };
 
-  const confirmChangeHandler = () => {
+  const confirmChangeHandler = (text) => {
     setIsConfirm(true);
-    if (!text) {
+    if (text != password) {
       setIsConfirm(false);
+      setConfirmErrLabel("Password does not match!");
     }
     setConfirm(text);
   };
 
-  const signupHandler = () => {
-    navigation.navigate("BasicInfo");
+  const signupHandler = async () => {
+    try {
+      if (email && password && password == confirm) {
+        dispatch({ type: "TOGGLE_LOADING" });
+        const response = await fetch(`${host}/auth/signup`, {
+          method: "PUT",
+          body: JSON.stringify({
+            email,
+            password,
+          }),
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }).then((res) => res.json());
+        dispatch({ type: "TOGGLE_LOADING" });
+        console.log(response);
+        if (!response.status) {
+          Alert.alert(response.message);
+          return;
+        }
+
+        dispatch({ type: "TOKEN", payload: response.token });
+
+        navigation.navigate("BasicInfo");
+      }
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   return (
@@ -57,49 +91,28 @@ const SignUpScreen = ({ navigation }) => {
           Sign Up
         </Text>
         <Text style={styles.label}>Email</Text>
-        <Item
-          regular
-          style={[
-            styles.inputContainer,
-            { borderColor: !isEmail ? "red" : Colors.label },
-          ]}
-        >
-          <Input
-            style={styles.input}
-            value={email}
-            onChangeText={emailChangeHandler}
-          />
-        </Item>
+        <TextInput
+          state={isEmail}
+          value={email}
+          onChangeText={emailChangeHandler}
+          errorLabel="Email must not be empty!"
+        />
         <Text style={styles.label}>Password</Text>
-        <Item
-          regular
-          style={[
-            styles.inputContainer,
-            { borderColor: !isPassword ? "red" : Colors.label },
-          ]}
-        >
-          <Input
-            secureTextEntry
-            style={styles.input}
-            value={password}
-            onChangeText={passwordChangeHandler}
-          />
-        </Item>
+        <TextInput
+          secureTextEntry
+          state={isPassword}
+          value={password}
+          onChangeText={passwordChangeHandler}
+          errorLabel="Password must not be empty!"
+        />
         <Text style={styles.label}>Confirm Password</Text>
-        <Item
-          regular
-          style={[
-            styles.inputContainer,
-            { borderColor: !isConfirm ? "red" : Colors.label },
-          ]}
-        >
-          <Input
-            secureTextEntry
-            style={styles.input}
-            value={confirm}
-            onChangeText={confirmChangeHandler}
-          />
-        </Item>
+        <TextInput
+          secureTextEntry
+          state={isConfirm}
+          value={confirm}
+          onChangeText={confirmChangeHandler}
+          errorLabel={confirmErrLabel}
+        />
         <View style={styles.btnContainer}>
           <Button
             disabled={!email || !password || password != confirm}
@@ -111,6 +124,7 @@ const SignUpScreen = ({ navigation }) => {
             <Text style={styles.btnText}>Sign Up</Text>
           </Button>
         </View>
+        <Spinner />
       </View>
     </TouchableWithoutFeedback>
   );
@@ -132,15 +146,6 @@ const styles = StyleSheet.create({
   image: {
     width: "100%",
     height: 300,
-  },
-  inputContainer: {
-    borderRadius: 15,
-    height: 40,
-    marginBottom: 20,
-  },
-  input: {
-    fontFamily: "Poppins",
-    fontSize: 13,
   },
   label: {
     fontSize: 14,

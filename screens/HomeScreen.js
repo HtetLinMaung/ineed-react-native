@@ -5,6 +5,7 @@ import Tag from "../components/tag/Tag";
 import NeedCard from "../components/home/NeedCard";
 import Colors from "../constants/colors";
 import { needContext } from "../contexts/NeedProvider";
+import { appContext } from "../contexts/AppProvider";
 import Text from "../components/typography/Text";
 import {
   Menu,
@@ -14,6 +15,7 @@ import {
 } from "react-native-popup-menu";
 
 const HomeScreen = ({ navigation }) => {
+  const [state, dispatch] = useContext(appContext);
   const [needs] = useContext(needContext);
   const [tags, setTags] = useState([]);
   const [currentTag, setCurrentTag] = useState(0);
@@ -59,7 +61,7 @@ const HomeScreen = ({ navigation }) => {
   };
 
   const logoutHandler = () => {
-    navigation.navigate("Login");
+    dispatch({ type: "TOKEN", payload: "" });
   };
 
   const tagItem = ({ item, index }) => (
@@ -73,16 +75,32 @@ const HomeScreen = ({ navigation }) => {
 
   const needItem = ({ item }) => <NeedCard item={item} />;
 
+  console.log(state.profileImage);
+
+  const ImageComponent = () =>
+    !state.profileImage ? (
+      <Image
+        style={styles.avatar}
+        source={require("../assets/images/avatar-placeholder.webp")}
+      />
+    ) : (
+      <Image
+        style={styles.avatar}
+        source={{
+          uri: state.profileImage,
+          width: 22,
+          height: 22,
+        }}
+      />
+    );
+
   return (
     <View style={styles.container}>
       <View style={styles.profileContainer}>
         <Icon name="ios-menu" style={styles.icon} />
         <Menu>
           <MenuTrigger>
-            <Image
-              style={styles.avatar}
-              source={require("../assets/images/avatar-placeholder.webp")}
-            />
+            <ImageComponent />
           </MenuTrigger>
           <MenuOptions customStyles={optionsStyles}>
             <MenuOption onSelect={() => navigation.navigate("EditProfile")}>

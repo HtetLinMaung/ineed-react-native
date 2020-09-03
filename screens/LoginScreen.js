@@ -13,11 +13,12 @@ import Colors from "../constants/colors";
 import Spinner from "../components/spinner/Spinner";
 import { host } from "../constants/api";
 import { appContext } from "../contexts/AppProvider";
+import TextInput from "../components/form/TextInput";
 
 const LoginScreen = ({ navigation }) => {
   const [, dispatch] = useContext(appContext);
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState("jsthtet96@gmail.com");
+  const [password, setPassword] = useState("123456");
   const [isEmail, setIsEmail] = useState(true);
   const [isPassword, setIsPassword] = useState(true);
 
@@ -40,7 +41,6 @@ const LoginScreen = ({ navigation }) => {
   const loginHandler = async () => {
     try {
       if (email && password) {
-        console.log(email, password);
         dispatch({ type: "TOGGLE_LOADING" });
         const response = await fetch(`${host}/auth/login`, {
           method: "POST",
@@ -58,7 +58,13 @@ const LoginScreen = ({ navigation }) => {
           Alert.alert(response.message);
           return;
         }
-        navigation.navigate("Home");
+        const { token, profileImage, username } = response;
+        dispatch({
+          type: "PROFILE_IMAGE",
+          payload: `https://hlm-ineed.herokuapp.com/${profileImage}`,
+        });
+        dispatch({ type: "USERNAME", payload: username });
+        dispatch({ type: "TOKEN", payload: token });
       }
     } catch (err) {
       console.log(err);
@@ -77,34 +83,20 @@ const LoginScreen = ({ navigation }) => {
         />
         <View style={styles.formContainer}>
           <Text style={styles.label}>Email</Text>
-          <Item
-            regular
-            style={[
-              styles.inputContainer,
-              { borderColor: !isEmail ? "red" : Colors.label },
-            ]}
-          >
-            <Input
-              style={styles.input}
-              value={email}
-              onChangeText={emailChangeHandler}
-            />
-          </Item>
+          <TextInput
+            state={isEmail}
+            value={email}
+            onChangeText={emailChangeHandler}
+            errorLabel="Email must not be empty!"
+          />
           <Text style={styles.label}>Password</Text>
-          <Item
-            regular
-            style={[
-              styles.inputContainer,
-              { borderColor: !isPassword ? "red" : Colors.label },
-            ]}
-          >
-            <Input
-              secureTextEntry
-              style={styles.input}
-              value={password}
-              onChangeText={passwordChangeHandler}
-            />
-          </Item>
+          <TextInput
+            secureTextEntry
+            state={isPassword}
+            value={password}
+            onChangeText={passwordChangeHandler}
+            errorLabel="Password must not be empty!"
+          />
           <Button transparent>
             <Text style={{ ...styles.label, fontSize: 12 }}>
               Forget Password?
@@ -148,15 +140,6 @@ const styles = StyleSheet.create({
     fontSize: 35,
     textAlign: "center",
     marginBottom: 20,
-  },
-  inputContainer: {
-    borderRadius: 15,
-    height: 40,
-    marginBottom: 20,
-  },
-  input: {
-    fontFamily: "Poppins",
-    fontSize: 13,
   },
   label: {
     fontSize: 14,
