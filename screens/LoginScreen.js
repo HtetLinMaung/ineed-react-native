@@ -19,8 +19,8 @@ import { useAsyncStorage } from "@react-native-community/async-storage";
 const LoginScreen = ({ navigation }) => {
   const { setItem } = useAsyncStorage("user_info");
   const [, dispatch] = useContext(appContext);
-  const [email, setEmail] = useState("jsthtet96@gmail.com");
-  const [password, setPassword] = useState("123456");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [isEmail, setIsEmail] = useState(true);
   const [isPassword, setIsPassword] = useState(true);
 
@@ -60,7 +60,7 @@ const LoginScreen = ({ navigation }) => {
           Alert.alert(response.message);
           return;
         }
-        const { token, profileImage, username } = response;
+        const { token, profileImage, username, id } = response;
         dispatch({
           type: "PROFILE_IMAGE",
           payload: profileImage
@@ -69,6 +69,7 @@ const LoginScreen = ({ navigation }) => {
         });
         dispatch({ type: "USERNAME", payload: username });
         dispatch({ type: "TOKEN", payload: token });
+        dispatch({ type: "USER_ID", payload: id });
         setItem(
           JSON.stringify({
             profileImage: profileImage
@@ -76,6 +77,7 @@ const LoginScreen = ({ navigation }) => {
               : "",
             username,
             token,
+            userId: id,
           })
         );
       }

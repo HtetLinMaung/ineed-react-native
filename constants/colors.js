@@ -7,6 +7,7 @@ export default {
   label: "#5A6687",
   Status: {
     "In progress": "#73B9FF",
+    Satisfied: "green",
   },
   tags: ["white", "#DEACFE", "#3F9FFF", "#F082AC", "#FFC999", "#C2CFDB"],
 };

@@ -7,6 +7,8 @@ const initialState = {
   token: null,
   profileImage: "",
   username: "",
+  id: null,
+  userId: null,
 };
 
 const AppProvider = ({ children }) => {
@@ -20,6 +22,10 @@ const AppProvider = ({ children }) => {
         return { ...state, profileImage: action.payload };
       case "USERNAME":
         return { ...state, username: action.payload };
+      case "ID":
+        return { ...state, id: action.payload };
+      case "USER_ID":
+        return { ...state, userId: action.payload };
       default:
         throw new Error();
     }

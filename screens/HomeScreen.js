@@ -13,9 +13,9 @@ import {
   MenuOption,
   MenuTrigger,
 } from "react-native-popup-menu";
-import { host } from "../constants/api";
 import Spinner from "../components/spinner/Spinner";
 import { useAsyncStorage } from "@react-native-community/async-storage";
+import { loadData } from "../share";
 
 const HomeScreen = ({ navigation }) => {
   const { setItem } = useAsyncStorage("user_info");
@@ -25,43 +25,34 @@ const HomeScreen = ({ navigation }) => {
   const [currentTag, setCurrentTag] = useState(0);
 
   useEffect(() => {
-    (async () => {
-      dispatch({ type: "TOGGLE_LOADING" });
-      const response = await fetch(`${host}/needs`, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${state.token}`,
-        },
-      }).then((res) => res.json());
-
-      setNeeds(response.data);
-      dispatch({ type: "TOGGLE_LOADING" });
-
-      let initTags = [
-        {
-          title: "All",
-          color: "white",
-          active: true,
-        },
+    let initTags = [
+      {
+        title: "All",
+        color: "white",
+        active: true,
+      },
+    ];
+    needs.forEach((need) => {
+      initTags = [
+        ...initTags,
+        ...need.tags.map((tag) => ({ ...tag, active: false })),
       ];
-      response.data.forEach((need) => {
-        initTags = [
-          ...initTags,
-          ...need.tags.map((tag) => ({ ...tag, active: false })),
-        ];
-      });
-      const uniqueInitTags = [];
-      for (const tag of initTags) {
-        if (
-          !uniqueInitTags.length ||
-          !uniqueInitTags.map((v) => v.title).includes(tag.title)
-        ) {
-          uniqueInitTags.push(tag);
-        }
+    });
+    const uniqueInitTags = [];
+    for (const tag of initTags) {
+      if (
+        !uniqueInitTags.length ||
+        !uniqueInitTags.map((v) => v.title).includes(tag.title)
+      ) {
+        uniqueInitTags.push(tag);
       }
+    }
 
-      setTags(uniqueInitTags.map((v, i) => ({ ...v, key: ++i + "" })));
-    })();
+    setTags(uniqueInitTags.map((v, i) => ({ ...v, key: ++i + "" })));
+  }, [needs]);
+
+  useEffect(() => {
+    loadData(state, setNeeds, dispatch);
   }, []);
 
   const pressHandler = (index) => {
@@ -93,8 +84,6 @@ const HomeScreen = ({ navigation }) => {
   );
 
   const needItem = ({ item }) => <NeedCard item={item} />;
-
-  console.log(state.profileImage);
 
   const ImageComponent = () =>
     !state.profileImage ? (
@@ -132,7 +121,12 @@ const HomeScreen = ({ navigation }) => {
         </Menu>
       </View>
       <View style={styles.tagContainer}>
-        <FlatList horizontal data={tags} renderItem={tagItem} />
+        <FlatList
+          horizontal
+          data={tags}
+          showsHorizontalScrollIndicator={false}
+          renderItem={tagItem}
+        />
       </View>
 
       <FlatList
@@ -172,7 +166,7 @@ const styles = StyleSheet.create({
   },
   tagContainer: {
     marginBottom: 10,
-    paddingLeft: paddingHorizontal,
+    marginHorizontal: 20,
   },
   cardContainer: {
     paddingHorizontal,

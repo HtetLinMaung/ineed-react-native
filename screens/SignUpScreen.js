@@ -124,13 +124,16 @@ const SignUpScreen = ({ navigation }) => {
             <Text style={styles.btnText}>Sign Up</Text>
           </Button>
         </View>
-        <Spinner />
+        <Spinner style={styles.spinner} />
       </View>
     </TouchableWithoutFeedback>
   );
 };
 
 const styles = StyleSheet.create({
+  spinner: {
+    left: "50%",
+  },
   container: {
     flex: 1,
     backgroundColor: "white",

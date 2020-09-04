@@ -19,7 +19,9 @@ const Navigator = () => {
         const user_info_json = await getItem();
 
         if (user_info_json) {
-          const { token, profileImage, username } = JSON.parse(user_info_json);
+          const { token, profileImage, username, userId } = JSON.parse(
+            user_info_json
+          );
           if (token && !state.token) {
             dispatch({ type: "TOKEN", payload: token });
           }
@@ -31,6 +33,9 @@ const Navigator = () => {
           }
           if (username && !state.username) {
             dispatch({ type: "USERNAME", payload: username });
+          }
+          if (userId && !state.userId) {
+            dispatch({ type: "USER_ID", payload: userId });
           }
         }
       } catch (err) {

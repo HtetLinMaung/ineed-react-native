@@ -144,7 +144,7 @@ const BasicInfoScreen = ({ navigation }) => {
             <Text style={styles.btnText}>Continue</Text>
           </Button>
         </View>
-        <Spinner />
+        <Spinner style={styles.spinner} />
       </View>
     </TouchableWithoutFeedback>
   );
@@ -152,6 +152,9 @@ const BasicInfoScreen = ({ navigation }) => {
 
 const size = 150;
 const styles = StyleSheet.create({
+  spinner: {
+    left: "52%",
+  },
   container: {
     flex: 1,
     alignItems: "stretch",

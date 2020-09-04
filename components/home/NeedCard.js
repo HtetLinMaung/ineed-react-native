@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useContext, useRef } from "react";
 import {
   Image,
   StyleSheet,
@@ -16,8 +16,14 @@ import moment from "moment";
 import Colors from "../../constants/colors";
 import RBSheet from "react-native-raw-bottom-sheet";
 import { useNavigation } from "@react-navigation/native";
+import { appContext } from "../../contexts/AppProvider";
+import { host } from "../../constants/api";
+import { loadData } from "../../share";
+import { needContext } from "../../contexts/NeedProvider";
 
 const NeedCard = ({ item }) => {
+  const [state, dispatch] = useContext(appContext);
+  const [, setNeeds] = useContext(needContext);
   const navigation = useNavigation();
   const scaleAnimation = useRef(new Animated.Value(1)).current;
   const refRBSheet = useRef();
@@ -27,6 +33,9 @@ const NeedCard = ({ item }) => {
       icon: "ios-eye-off",
       text: "Hide",
       onPress: () => {
+        setNeeds((currentState) =>
+          currentState.filter((need) => need._id != item._id)
+        );
         refRBSheet.current.close();
       },
     },
@@ -34,6 +43,7 @@ const NeedCard = ({ item }) => {
       icon: "ios-arrow-dropdown",
       text: "Detail",
       onPress: () => {
+        dispatch({ type: "ID", payload: item._id });
         refRBSheet.current.close();
         navigation.navigate("NeedDetail");
       },
@@ -42,6 +52,7 @@ const NeedCard = ({ item }) => {
       icon: "ios-color-fill",
       text: "Edit",
       onPress: () => {
+        dispatch({ type: "ID", payload: item._id });
         refRBSheet.current.close();
         navigation.navigate("EditNeed");
       },
@@ -50,6 +61,7 @@ const NeedCard = ({ item }) => {
       icon: "ios-trash",
       text: "Delete",
       onPress: () => {
+        dispatch({ type: "ID", payload: item._id });
         refRBSheet.current.close();
         Alert.alert(
           "Are you sure?",
@@ -60,7 +72,26 @@ const NeedCard = ({ item }) => {
               onPress: () => console.log("Cancel Pressed"),
               style: "cancel",
             },
-            { text: "OK", onPress: () => console.log("OK Pressed") },
+            {
+              text: "OK",
+              onPress: async () => {
+                try {
+                  dispatch({ type: "TOGGLE_LOADING" });
+                  await fetch(`${host}/needs/${state.id}`, {
+                    method: "DELETE",
+                    headers: {
+                      "Content-Type": "application/json",
+                      Authorization: `Bearer ${state.token}`,
+                    },
+                  });
+                  dispatch({ type: "TOGGLE_LOADING" });
+                  loadData(state, setNeeds, dispatch);
+                  navigation.navigate("Home");
+                } catch (err) {
+                  console.log(err);
+                }
+              },
+            },
           ],
           { cancelable: true }
         );
@@ -82,6 +113,7 @@ const NeedCard = ({ item }) => {
     ));
 
   const toDetail = () => {
+    dispatch({ type: "ID", payload: item._id });
     Animated.timing(scaleAnimation, {
       toValue: 0.95,
       duration: 150,
@@ -175,7 +207,9 @@ const NeedCard = ({ item }) => {
             },
           }}
         >
-          <SheetMenuBody menus={menus} />
+          <SheetMenuBody
+            menus={item.user._id != state.userId ? menus.slice(0, 2) : menus}
+          />
         </RBSheet>
       </Animated.View>
     </TouchableWithoutFeedback>

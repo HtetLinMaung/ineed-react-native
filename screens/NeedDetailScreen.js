@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { View, StyleSheet, ScrollView, Image, Alert } from "react-native";
 import { Icon } from "native-base";
 import Text from "../components/typography/Text";
@@ -10,8 +10,46 @@ import {
   MenuOption,
   MenuTrigger,
 } from "react-native-popup-menu";
+import { appContext } from "../contexts/AppProvider";
+import { host } from "../constants/api";
+import Spinner from "../components/spinner/Spinner";
+import moment from "moment";
+import { loadData } from "../share";
+import { needContext } from "../contexts/NeedProvider";
 
 const NeedDetailScreen = ({ navigation }) => {
+  const [state, dispatch] = useContext(appContext);
+  const [, setNeeds] = useContext(needContext);
+  const [date, setDate] = useState();
+  const [header, setHeader] = useState("");
+  const [body, setBody] = useState("");
+  const [tags, setTags] = useState([]);
+  const [user, setUser] = useState();
+
+  useEffect(() => {
+    (async () => {
+      dispatch({ type: "TOGGLE_LOADING" });
+      const response = await fetch(`${host}/needs/${state.id}`, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${state.token}`,
+        },
+      }).then((res) => res.json());
+      dispatch({ type: "TOGGLE_LOADING" });
+      console.log(response);
+      const { createdAt, body, header, tags, user } = response.data;
+      setDate(createdAt);
+      setBody(body);
+      setHeader(header);
+      setTags(tags);
+      setUser(user);
+    })();
+  }, []);
+
+  const editHandler = () => {
+    navigation.navigate("EditNeed");
+  };
+
   const deleteHandler = () => {
     Alert.alert(
       "Are you sure?",
@@ -24,8 +62,22 @@ const NeedDetailScreen = ({ navigation }) => {
         },
         {
           text: "OK",
-          onPress: () => {
-            navigation.navigate("Home");
+          onPress: async () => {
+            try {
+              dispatch({ type: "TOGGLE_LOADING" });
+              await fetch(`${host}/needs/${state.id}`, {
+                method: "DELETE",
+                headers: {
+                  "Content-Type": "application/json",
+                  Authorization: `Bearer ${state.token}`,
+                },
+              });
+              dispatch({ type: "TOGGLE_LOADING" });
+              loadData(state, setNeeds, dispatch);
+              navigation.navigate("Home");
+            } catch (err) {
+              console.log(err);
+            }
           },
         },
       ],
@@ -33,45 +85,71 @@ const NeedDetailScreen = ({ navigation }) => {
     );
   };
 
+  const MenuComponent = () =>
+    user && user._id == state.userId ? (
+      <Menu>
+        <MenuTrigger>
+          <Icon name="ios-more" style={styles.icon} />
+        </MenuTrigger>
+        <MenuOptions customStyles={optionsStyles}>
+          <MenuOption onSelect={editHandler}>
+            <Text>Edit</Text>
+          </MenuOption>
+          <MenuOption onSelect={deleteHandler}>
+            <Text>Delete</Text>
+          </MenuOption>
+        </MenuOptions>
+      </Menu>
+    ) : null;
+
+  const ImageComponent = () =>
+    user ? (
+      user.profileImage ? (
+        <Image
+          style={styles.avatar}
+          source={{
+            uri: `https://hlm-ineed.herokuapp.com/${user.profileImage}`,
+            width: 30,
+            height: 30,
+          }}
+        />
+      ) : (
+        <Image
+          style={styles.avatar}
+          source={require("../assets/images/avatar-placeholder.webp")}
+        />
+      )
+    ) : null;
+
+  const TagList = () =>
+    tags.map((tag, i) => (
+      <Tag key={i} title={tag.title} color={tag.color} active />
+    ));
+
   return (
     <ScrollView style={styles.container}>
       <View style={styles.dateContainer}>
-        <Text style={styles.date}>August 31, 2020</Text>
-        <Menu>
-          <MenuTrigger>
-            <Icon name="ios-more" style={styles.icon} />
-          </MenuTrigger>
-          <MenuOptions customStyles={optionsStyles}>
-            <MenuOption onSelect={() => navigation.navigate("EditNeed")}>
-              <Text>Edit</Text>
-            </MenuOption>
-            <MenuOption onSelect={deleteHandler}>
-              <Text>Delete</Text>
-            </MenuOption>
-          </MenuOptions>
-        </Menu>
+        <Text style={styles.date}>
+          {date ? moment(date).format("MMMM DD, YYYY") : ""}
+        </Text>
+        <MenuComponent />
       </View>
-      <Text style={styles.header}>Time management</Text>
+      <Text style={styles.header}>{header}</Text>
       <View style={styles.tagContainer}>
-        <Tag title="Trainings" color={Colors.tags[2]} active />
+        <TagList />
       </View>
       <View style={styles.profileContainer}>
-        <Image
-          style={styles.avatar}
-          source={require("../assets/images/avatar.jpg")}
-        />
-        <Text style={styles.username}>Htet Lin Maung</Text>
+        <ImageComponent />
+        <Text style={styles.username}>{user && user.username}</Text>
       </View>
-      <Text style={styles.body}>
-        HR department want to do "Time management" training for colleges. We
-        already find some companies that specialize in this way. Below you can
-        find a list blah blah blah
-      </Text>
+      <Text style={styles.body}>{body}</Text>
+      <Spinner style={styles.spinner} />
     </ScrollView>
   );
 };
 
 const optionsStyles = {
+  spinner: {},
   optionsContainer: {
     padding: 5,
     borderRadius: 15,
@@ -96,6 +174,7 @@ const styles = StyleSheet.create({
   body: {
     marginVertical: 20,
     fontSize: 16,
+    marginBottom: 500,
   },
   tagContainer: {
     flexDirection: "row",

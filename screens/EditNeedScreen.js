@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import {
   View,
   StyleSheet,
@@ -10,14 +10,46 @@ import { Input, Item, Textarea, Icon, Button, CheckBox } from "native-base";
 import Text from "../components/typography/Text";
 import Tag from "../components/tag/Tag";
 import Colors from "../constants/colors";
+import { appContext } from "../contexts/AppProvider";
+import { host } from "../constants/api";
+import { ScrollView } from "react-native-gesture-handler";
+import TextInput from "../components/form/TextInput";
+import Spinner from "../components/spinner/Spinner";
+import { loadData } from "../share";
+import { needContext } from "../contexts/NeedProvider";
 
 const EditNeedScreen = ({ navigation }) => {
+  const [state, dispatch] = useContext(appContext);
+  const [, setNeeds] = useContext(needContext);
   const [isSatisfied, setIsSatisfied] = useState(false);
   const [tagColors, setTagColors] = useState(
     Colors.tags.map((color, i) => ({ color, selected: i > 0 ? false : true }))
   );
   const [tags, setTags] = useState([]);
   const [tag, setTag] = useState("");
+  const [header, setHeader] = useState("");
+  const [body, setBody] = useState("");
+  const [isHeader, setIsHeader] = useState(true);
+  const [isBody, setIsBody] = useState(true);
+  const [isTag, setIsTag] = useState(true);
+
+  useEffect(() => {
+    (async () => {
+      dispatch({ type: "TOGGLE_LOADING" });
+      const response = await fetch(`${host}/needs/${state.id}`, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${state.token}`,
+        },
+      }).then((res) => res.json());
+      dispatch({ type: "TOGGLE_LOADING" });
+      console.log(response);
+      setHeader(response.data.header);
+      setBody(response.data.body);
+      setTags(response.data.tags);
+      setIsSatisfied(response.data.status != "In progress");
+    })();
+  }, []);
 
   const colorTouchHandler = (i) => {
     setTagColors((currentState) =>
@@ -38,7 +70,7 @@ const EditNeedScreen = ({ navigation }) => {
         {
           title: tag,
           color: tagColors.find((item) => item.selected).color,
-          id: new Date().toISOString(),
+          _id: new Date().toISOString(),
         },
       ]);
       setTag("");
@@ -46,11 +78,57 @@ const EditNeedScreen = ({ navigation }) => {
   };
 
   const tagTouchHandler = (id) => {
-    setTags((currentState) => currentState.filter((item) => item.id != id));
+    setTags((currentState) => currentState.filter((item) => item._id != id));
   };
 
-  const updateHandler = () => {
-    navigation.navigate("Home");
+  const headerChangeHandler = (text) => {
+    setIsHeader(true);
+    if (!text) {
+      setIsHeader(false);
+    }
+    setHeader(text);
+  };
+
+  const bodyChangeHandler = (text) => {
+    setIsBody(true);
+    if (!text) {
+      setIsBody(false);
+    }
+    setBody(text);
+  };
+
+  const tagChangeHandler = (text) => {
+    setIsTag(true);
+    if (!text) {
+      setIsTag(false);
+    }
+    setTag(text);
+  };
+
+  const updateHandler = async () => {
+    try {
+      dispatch({ type: "TOGGLE_LOADING" });
+      const response = await fetch(`${host}/needs/${state.id}`, {
+        method: "PUT",
+        body: JSON.stringify({
+          header,
+          body,
+          tags,
+          status: isSatisfied,
+        }),
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${state.token}`,
+        },
+      }).then((res) => res.json());
+      dispatch({ type: "TOGGLE_LOADING" });
+      console.log(response);
+      loadData(state, setNeeds, dispatch);
+
+      navigation.navigate("Home");
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   const ColorList = () =>
@@ -75,52 +153,81 @@ const EditNeedScreen = ({ navigation }) => {
         color={tag.color}
         active
         style={styles.tag}
-        onPress={tagTouchHandler.bind(this, tag.id)}
+        onPress={tagTouchHandler.bind(this, tag._id)}
       />
     ));
 
+  const ErrorText = () =>
+    !isBody ? (
+      <Text style={styles.errorLabel}>Detail must not be empty!</Text>
+    ) : null;
+
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-      <View style={styles.container}>
-        <View style={styles.headerContainer}>
-          <Text bold style={styles.header}>
-            Edit Need
-          </Text>
-          <CheckBox
-            checked={isSatisfied}
-            onPress={() => setIsSatisfied((state) => !state)}
-            color={Colors.label}
-            style={styles.checkbox}
+      <ScrollView>
+        <View style={styles.container}>
+          <View style={styles.headerContainer}>
+            <Text bold style={styles.header}>
+              Edit Need
+            </Text>
+            <CheckBox
+              checked={isSatisfied}
+              onPress={() => setIsSatisfied((state) => !state)}
+              color={Colors.label}
+              style={styles.checkbox}
+            />
+          </View>
+
+          <Text style={styles.label}>Title</Text>
+          <TextInput
+            value={header}
+            onChangeText={headerChangeHandler}
+            state={isHeader}
+            errorLabel="Title must not be empty!"
           />
-        </View>
 
-        <Text style={styles.label}>Title</Text>
-        <Item regular style={styles.inputContainer}>
-          <Input style={styles.input} />
-        </Item>
+          <Text style={styles.label}>Need Detail</Text>
+          <Textarea
+            style={[
+              styles.textarea,
+              {
+                borderColor: isBody ? Colors.label : "red",
+                marginBottom: isBody ? 20 : 0,
+              },
+            ]}
+            value={body}
+            onChangeText={bodyChangeHandler}
+            rowSpan={5}
+            bordered
+          />
+          <ErrorText />
 
-        <Text style={styles.label}>Need Detail</Text>
-        <Textarea style={styles.textarea} rowSpan={5} bordered />
-
-        <Text style={styles.label}>Tags</Text>
-        <View style={styles.colorContainer}>
-          <ColorList />
-        </View>
-        <Item regular style={styles.inputContainer}>
-          <Input
-            style={styles.input}
+          <Text style={styles.label}>Tags</Text>
+          <View style={styles.colorContainer}>
+            <ColorList />
+          </View>
+          <TextInput
             value={tag}
-            onChangeText={(text) => setTag(text)}
+            onChangeText={tagChangeHandler}
             onKeyPress={enterHandler}
+            state={isTag}
+            errorLabel="Tag name must not be empty!"
           />
-        </Item>
-        <View style={styles.tagContainer}>
-          <TagList />
+          <View style={styles.tagContainer}>
+            <TagList />
+          </View>
+          <Button
+            disabled={!header || !body}
+            block
+            rounded
+            style={styles.button}
+            onPress={updateHandler}
+          >
+            <Text style={styles.buttonText}>Update</Text>
+          </Button>
         </View>
-        <Button block rounded style={styles.button} onPress={updateHandler}>
-          <Text style={styles.buttonText}>Update</Text>
-        </Button>
-      </View>
+        <Spinner />
+      </ScrollView>
     </TouchableWithoutFeedback>
   );
 };
@@ -130,6 +237,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingVertical: 35,
+    justifyContent: "space-around",
     paddingHorizontal: 20,
     backgroundColor: Colors.background,
   },
@@ -159,12 +267,10 @@ const styles = StyleSheet.create({
     paddingLeft: 5,
   },
   textarea: {
-    borderColor: Colors.label,
     borderRadius: 15,
     paddingVertical: 10,
     fontFamily: "Poppins",
     fontSize: 13,
-    marginBottom: 20,
   },
   colorContainer: {
     flexDirection: "row",
@@ -204,6 +310,12 @@ const styles = StyleSheet.create({
         scale: 0.8,
       },
     ],
+  },
+  errorLabel: {
+    color: "red",
+    marginTop: 5,
+    paddingHorizontal: 10,
+    marginBottom: 20,
   },
 });
 

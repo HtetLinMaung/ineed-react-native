@@ -69,8 +69,7 @@ const EditProfileScreen = ({ navigation }) => {
           ""
         );
       }
-      console.log("profileimage");
-      console.log(profileImage);
+
       formData.append("profileImage", profileImage);
       formData.append("username", state.username);
       dispatch({ type: "TOGGLE_LOADING" });
@@ -157,7 +156,7 @@ const EditProfileScreen = ({ navigation }) => {
             <Text style={styles.btnText}>Update</Text>
           </Button>
         </View>
-        <Spinner />
+        <Spinner style={styles.spinner} />
       </View>
     </TouchableWithoutFeedback>
   );
@@ -165,6 +164,9 @@ const EditProfileScreen = ({ navigation }) => {
 
 const size = 150;
 const styles = StyleSheet.create({
+  spinner: {
+    left: "52%",
+  },
   container: {
     flex: 1,
     alignItems: "stretch",
