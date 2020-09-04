@@ -16,8 +16,10 @@ import TextInput from "../components/form/TextInput";
 import { appContext } from "../contexts/AppProvider";
 import { host } from "../constants/api";
 import Spinner from "../components/spinner/Spinner";
+import { useAsyncStorage } from "@react-native-community/async-storage";
 
 const EditProfileScreen = ({ navigation }) => {
+  const { setItem, getItem } = useAsyncStorage("user_info");
   const [state, dispatch] = useContext(appContext);
   const [filename, setFilename] = useState("");
   const [type, setType] = useState("");
@@ -54,11 +56,21 @@ const EditProfileScreen = ({ navigation }) => {
   const updateHandler = async () => {
     try {
       const formData = new FormData();
-      const profileImage = {
-        uri: state.profileImage,
-        type,
-        name: filename,
-      };
+      let profileImage;
+      if (type && filename) {
+        profileImage = {
+          uri: state.profileImage,
+          type,
+          name: filename,
+        };
+      } else {
+        profileImage = state.profileImage.replace(
+          "https://hlm-ineed.herokuapp.com/",
+          ""
+        );
+      }
+      console.log("profileimage");
+      console.log(profileImage);
       formData.append("profileImage", profileImage);
       formData.append("username", state.username);
       dispatch({ type: "TOGGLE_LOADING" });
@@ -73,8 +85,29 @@ const EditProfileScreen = ({ navigation }) => {
       }).then((res) => res.json());
       dispatch({ type: "TOGGLE_LOADING" });
       console.log(response);
+
       if (!response.status) {
         Alert.alert(response.message);
+      }
+
+      const { profileImage: image, username } = response.data;
+      dispatch({
+        type: "PROFILE_IMAGE",
+        payload: image ? `https://hlm-ineed.herokuapp.com/${image}` : "",
+      });
+      dispatch({ type: "USERNAME", payload: username });
+      const user_info_json = await getItem();
+      if (user_info_json) {
+        const user_info = JSON.parse(user_info_json);
+        await setItem(
+          JSON.stringify({
+            ...user_info,
+            profileImage: image
+              ? `https://hlm-ineed.herokuapp.com/${image}`
+              : "",
+            username,
+          })
+        );
       }
       navigation.navigate("Home");
     } catch (err) {

@@ -117,6 +117,23 @@ const NeedCard = ({ item }) => {
     refRBSheet.current.open();
   };
 
+  const ImageComponent = () =>
+    !item.user.profileImage ? (
+      <Image
+        style={styles.avatar}
+        source={require("../../assets/images/avatar-placeholder.webp")}
+      />
+    ) : (
+      <Image
+        style={styles.avatar}
+        source={{
+          uri: `https://hlm-ineed.herokuapp.com/${item.user.profileImage}`,
+          width: 30,
+          height: 30,
+        }}
+      />
+    );
+
   return (
     <TouchableWithoutFeedback
       onPress={toDetail}
@@ -125,11 +142,8 @@ const NeedCard = ({ item }) => {
     >
       <Animated.View style={[styles.card, scaleStyle]}>
         <View style={styles.cardHeader}>
-          <Image
-            style={styles.avatar}
-            source={require("../../assets/images/avatar.jpg")}
-          />
-          <Text style={styles.username}>{item.username}</Text>
+          <ImageComponent />
+          <Text style={styles.username}>{item.user.username}</Text>
           <Text style={styles.createDate}>
             {moment(item.createdAt).format("DD.MM.YYYY")}
           </Text>

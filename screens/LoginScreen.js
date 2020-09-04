@@ -7,15 +7,17 @@ import {
   Image,
   Alert,
 } from "react-native";
-import { Item, Input, Button } from "native-base";
+import { Button } from "native-base";
 import Text from "../components/typography/Text";
 import Colors from "../constants/colors";
 import Spinner from "../components/spinner/Spinner";
 import { host } from "../constants/api";
 import { appContext } from "../contexts/AppProvider";
 import TextInput from "../components/form/TextInput";
+import { useAsyncStorage } from "@react-native-community/async-storage";
 
 const LoginScreen = ({ navigation }) => {
+  const { setItem } = useAsyncStorage("user_info");
   const [, dispatch] = useContext(appContext);
   const [email, setEmail] = useState("jsthtet96@gmail.com");
   const [password, setPassword] = useState("123456");
@@ -61,10 +63,21 @@ const LoginScreen = ({ navigation }) => {
         const { token, profileImage, username } = response;
         dispatch({
           type: "PROFILE_IMAGE",
-          payload: `https://hlm-ineed.herokuapp.com/${profileImage}`,
+          payload: profileImage
+            ? `https://hlm-ineed.herokuapp.com/${profileImage}`
+            : "",
         });
         dispatch({ type: "USERNAME", payload: username });
         dispatch({ type: "TOKEN", payload: token });
+        setItem(
+          JSON.stringify({
+            profileImage: profileImage
+              ? `https://hlm-ineed.herokuapp.com/${profileImage}`
+              : "",
+            username,
+            token,
+          })
+        );
       }
     } catch (err) {
       console.log(err);

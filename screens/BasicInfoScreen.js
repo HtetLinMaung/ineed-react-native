@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import * as ImagePicker from "expo-image-picker";
 import {
   View,
@@ -8,12 +8,20 @@ import {
   Image,
   TouchableOpacity,
 } from "react-native";
-import { Item, Input, Button } from "native-base";
+import { Button } from "native-base";
 import Text from "../components/typography/Text";
 import Colors from "../constants/colors";
+import TextInput from "../components/form/TextInput";
+import { appContext } from "../contexts/AppProvider";
+import { host } from "../constants/api";
+import Spinner from "../components/spinner/Spinner";
+import { useAsyncStorage } from "@react-native-community/async-storage";
 
 const BasicInfoScreen = ({ navigation }) => {
-  const [image, setImage] = useState(null);
+  const { setItem, getItem } = useAsyncStorage("user_info");
+  const [state, dispatch] = useContext(appContext);
+  const [filename, setFilename] = useState("");
+  const [type, setType] = useState("");
 
   const pickImage = async () => {
     try {
@@ -30,25 +38,78 @@ const BasicInfoScreen = ({ navigation }) => {
         quality: 1,
       });
       if (!result.cancelled) {
-        setImage(result.uri);
+        setFilename(result.uri.split("/").pop());
+        const match = /\.(\w+)$/.exec(result.uri.split("/").pop());
+        setType(match ? `image/${match[1]}` : `image`);
+        dispatch({ type: "PROFILE_IMAGE", payload: result.uri });
       }
     } catch (err) {
       console.log(err);
     }
   };
 
-  const continueHandler = () => {
-    navigation.navigate("Home");
+  const usernameChangeHandler = (text) => {
+    dispatch({ type: "USERNAME", payload: text });
+  };
+
+  const continueHandler = async () => {
+    try {
+      const formData = new FormData();
+      const profileImage = {
+        uri: state.profileImage,
+        type,
+        name: filename,
+      };
+      formData.append("profileImage", profileImage);
+      formData.append("username", state.username);
+      dispatch({ type: "TOGGLE_LOADING" });
+      const response = await fetch(`${host}/auth/edit-profile`, {
+        method: "PUT",
+        body: formData,
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${state.token}`,
+        },
+      }).then((res) => res.json());
+      dispatch({ type: "TOGGLE_LOADING" });
+      console.log(response);
+      if (!response.status) {
+        Alert.alert(response.message);
+      }
+      const { profileImage: image, username } = response.data;
+      dispatch({
+        type: "PROFILE_IMAGE",
+        payload: image ? `https://hlm-ineed.herokuapp.com/${image}` : "",
+      });
+      dispatch({ type: "USERNAME", payload: username });
+      const user_info_json = await getItem();
+      if (user_info_json) {
+        const user_info = JSON.parse(user_info_json);
+        await setItem(
+          JSON.stringify({
+            ...user_info,
+            profileImage: image
+              ? `https://hlm-ineed.herokuapp.com/${image}`
+              : "",
+            username,
+          })
+        );
+      }
+      navigation.navigate("Home");
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   const ImageComponent = () =>
-    !image ? (
+    !state.profileImage ? (
       <Image
         style={styles.avatar}
         source={require("../assets/images/avatar-placeholder.webp")}
       />
     ) : (
-      <Image style={styles.avatar} source={{ uri: image }} />
+      <Image style={styles.avatar} source={{ uri: state.profileImage }} />
     );
 
   return (
@@ -67,9 +128,11 @@ const BasicInfoScreen = ({ navigation }) => {
           Enter the Username associated with your account
         </Text>
 
-        <Item regular style={styles.inputContainer}>
-          <Input style={styles.input} placeholder="Enter your name" />
-        </Item>
+        <TextInput
+          placeholder="Enter your name"
+          value={state.username}
+          onChangeText={usernameChangeHandler}
+        />
 
         <View style={styles.btnContainer}>
           <Button
@@ -81,6 +144,7 @@ const BasicInfoScreen = ({ navigation }) => {
             <Text style={styles.btnText}>Continue</Text>
           </Button>
         </View>
+        <Spinner />
       </View>
     </TouchableWithoutFeedback>
   );
@@ -95,16 +159,6 @@ const styles = StyleSheet.create({
     justifyContent: "space-around",
     paddingTop: 10,
     paddingHorizontal: 25,
-  },
-  inputContainer: {
-    borderRadius: 15,
-    height: 40,
-    borderColor: Colors.label,
-    marginBottom: 20,
-  },
-  input: {
-    fontFamily: "Poppins",
-    fontSize: 13,
   },
   label: {
     fontSize: 22,

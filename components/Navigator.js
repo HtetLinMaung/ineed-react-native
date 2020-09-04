@@ -11,14 +11,27 @@ const Stack = createStackNavigator();
 
 const Navigator = () => {
   const [state, dispatch] = useContext(appContext);
-  const { getItem } = useAsyncStorage("token");
+  const { getItem } = useAsyncStorage("user_info");
 
   useEffect(() => {
     (async () => {
       try {
-        const token = await getItem();
-        if (token && !state.token) {
-          dispatch({ type: "TOKEN", payload: token });
+        const user_info_json = await getItem();
+
+        if (user_info_json) {
+          const { token, profileImage, username } = JSON.parse(user_info_json);
+          if (token && !state.token) {
+            dispatch({ type: "TOKEN", payload: token });
+          }
+          if (profileImage && !state.profileImage) {
+            dispatch({
+              type: "PROFILE_IMAGE",
+              payload: profileImage,
+            });
+          }
+          if (username && !state.username) {
+            dispatch({ type: "USERNAME", payload: username });
+          }
         }
       } catch (err) {
         console.log(err);
