@@ -60,20 +60,6 @@ const EditNeedScreen = ({ navigation }) => {
     );
   };
 
-  const enterHandler = (e) => {
-    if (e.nativeEvent.key == "Enter") {
-      setTags((currentState) => [
-        ...currentState,
-        {
-          title: tag,
-          color: tagColors.find((item) => item.selected).color,
-          _id: new Date().toISOString(),
-        },
-      ]);
-      setTag("");
-    }
-  };
-
   const tagTouchHandler = (id) => {
     setTags((currentState) => currentState.filter((item) => item._id != id));
   };
@@ -100,6 +86,20 @@ const EditNeedScreen = ({ navigation }) => {
       setIsTag(false);
     }
     setTag(text);
+  };
+
+  const endEditingHandler = () => {
+    if (tag) {
+      setTags((currentState) => [
+        ...currentState,
+        {
+          title: tag,
+          color: tagColors.find((item) => item.selected).color,
+          _id: new Date().toISOString(),
+        },
+      ]);
+      setTag("");
+    }
   };
 
   const updateHandler = async () => {
@@ -203,9 +203,9 @@ const EditNeedScreen = ({ navigation }) => {
             <ColorList />
           </View>
           <TextInput
+            onEndEditing={endEditingHandler}
             value={tag}
             onChangeText={tagChangeHandler}
-            onKeyPress={enterHandler}
             state={isTag}
             errorLabel="Tag name must not be empty!"
           />

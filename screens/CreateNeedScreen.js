@@ -41,14 +41,14 @@ const CreateNeedScreen = ({ navigation }) => {
     );
   };
 
-  const enterHandler = (e) => {
-    if (tag && e.nativeEvent.key == "Enter") {
+  const endEditingHandler = () => {
+    if (tag) {
       setTags((currentState) => [
         ...currentState,
         {
           title: tag,
           color: tagColors.find((item) => item.selected).color,
-          id: new Date().toISOString(),
+          _id: new Date().toISOString(),
         },
       ]);
       setTag("");
@@ -56,7 +56,7 @@ const CreateNeedScreen = ({ navigation }) => {
   };
 
   const tagTouchHandler = (id) => {
-    setTags((currentState) => currentState.filter((item) => item.id != id));
+    setTags((currentState) => currentState.filter((item) => item._id != id));
   };
 
   const headerChangeHandler = (text) => {
@@ -130,7 +130,7 @@ const CreateNeedScreen = ({ navigation }) => {
         color={tag.color}
         active
         style={styles.tag}
-        onPress={tagTouchHandler.bind(this, tag.id)}
+        onPress={tagTouchHandler.bind(this, tag._id)}
       />
     ));
 
@@ -178,7 +178,7 @@ const CreateNeedScreen = ({ navigation }) => {
           <TextInput
             value={tag}
             onChangeText={tagChangeHandler}
-            onKeyPress={enterHandler}
+            onEndEditing={endEditingHandler}
             state={isTag}
             errorLabel="Tag name must not be empty!"
           />
