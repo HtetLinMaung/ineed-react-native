@@ -14,12 +14,9 @@ import { appContext } from "../contexts/AppProvider";
 import { host } from "../constants/api";
 import Spinner from "../components/spinner/Spinner";
 import moment from "moment";
-import { loadData } from "../share";
-import { needContext } from "../contexts/NeedProvider";
 
 const NeedDetailScreen = ({ navigation }) => {
   const [state, dispatch] = useContext(appContext);
-  const [, setNeeds] = useContext(needContext);
   const [date, setDate] = useState();
   const [header, setHeader] = useState("");
   const [body, setBody] = useState("");
@@ -73,7 +70,6 @@ const NeedDetailScreen = ({ navigation }) => {
                 },
               });
               dispatch({ type: "TOGGLE_LOADING" });
-              loadData(state, setNeeds, dispatch);
               navigation.navigate("Home");
             } catch (err) {
               console.log(err);

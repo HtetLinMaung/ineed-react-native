@@ -15,12 +15,9 @@ import { host } from "../constants/api";
 import { ScrollView } from "react-native-gesture-handler";
 import TextInput from "../components/form/TextInput";
 import Spinner from "../components/spinner/Spinner";
-import { loadData } from "../share";
-import { needContext } from "../contexts/NeedProvider";
 
 const EditNeedScreen = ({ navigation }) => {
   const [state, dispatch] = useContext(appContext);
-  const [, setNeeds] = useContext(needContext);
   const [isSatisfied, setIsSatisfied] = useState(false);
   const [tagColors, setTagColors] = useState(
     Colors.tags.map((color, i) => ({ color, selected: i > 0 ? false : true }))
@@ -123,7 +120,6 @@ const EditNeedScreen = ({ navigation }) => {
       }).then((res) => res.json());
       dispatch({ type: "TOGGLE_LOADING" });
       console.log(response);
-      loadData(state, setNeeds, dispatch);
 
       navigation.navigate("Home");
     } catch (err) {

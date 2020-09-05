@@ -18,7 +18,6 @@ import RBSheet from "react-native-raw-bottom-sheet";
 import { useNavigation } from "@react-navigation/native";
 import { appContext } from "../../contexts/AppProvider";
 import { host } from "../../constants/api";
-import { loadData } from "../../share";
 import { needContext } from "../../contexts/NeedProvider";
 
 const NeedCard = ({ item }) => {
@@ -43,7 +42,6 @@ const NeedCard = ({ item }) => {
       icon: "ios-arrow-dropdown",
       text: "Detail",
       onPress: () => {
-        dispatch({ type: "ID", payload: item._id });
         refRBSheet.current.close();
         navigation.navigate("NeedDetail");
       },
@@ -52,7 +50,6 @@ const NeedCard = ({ item }) => {
       icon: "ios-color-fill",
       text: "Edit",
       onPress: () => {
-        dispatch({ type: "ID", payload: item._id });
         refRBSheet.current.close();
         navigation.navigate("EditNeed");
       },
@@ -61,7 +58,6 @@ const NeedCard = ({ item }) => {
       icon: "ios-trash",
       text: "Delete",
       onPress: () => {
-        dispatch({ type: "ID", payload: item._id });
         refRBSheet.current.close();
         Alert.alert(
           "Are you sure?",
@@ -85,8 +81,6 @@ const NeedCard = ({ item }) => {
                     },
                   });
                   dispatch({ type: "TOGGLE_LOADING" });
-                  loadData(state, setNeeds, dispatch);
-                  navigation.navigate("Home");
                 } catch (err) {
                   console.log(err);
                 }
@@ -140,6 +134,7 @@ const NeedCard = ({ item }) => {
   };
 
   const showSettings = () => {
+    dispatch({ type: "ID", payload: item._id });
     Animated.timing(scaleAnimation, {
       toValue: 0.95,
       duration: 100,

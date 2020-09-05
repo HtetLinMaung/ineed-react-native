@@ -15,12 +15,9 @@ import Colors from "../constants/colors";
 import { appContext } from "../contexts/AppProvider";
 import { host } from "../constants/api";
 import Spinner from "../components/spinner/Spinner";
-import { needContext } from "../contexts/NeedProvider";
-import { loadData } from "../share";
 
 const CreateNeedScreen = ({ navigation }) => {
   const [state, dispatch] = useContext(appContext);
-  const [, setNeeds] = useContext(needContext);
   const [tagColors, setTagColors] = useState(
     Colors.tags.map((color, i) => ({ color, selected: i > 0 ? false : true }))
   );
@@ -104,7 +101,6 @@ const CreateNeedScreen = ({ navigation }) => {
         }).then((res) => res.json());
         dispatch({ type: "TOGGLE_LOADING" });
         console.log(response);
-        loadData(state, setNeeds, dispatch);
         navigation.navigate("Home");
       }
     } catch (err) {
