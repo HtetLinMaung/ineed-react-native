@@ -6,7 +6,7 @@ import {
   Keyboard,
   TouchableOpacity,
 } from "react-native";
-import { Input, Item, Textarea, Icon, Button, CheckBox } from "native-base";
+import { Textarea, Icon, Button, CheckBox } from "native-base";
 import Text from "../components/typography/Text";
 import Tag from "../components/tag/Tag";
 import Colors from "../constants/colors";
@@ -113,7 +113,7 @@ const EditNeedScreen = ({ navigation }) => {
         body: JSON.stringify({
           header,
           body,
-          tags,
+          tags: tags.map((tag) => ({ color: tag.color, title: tag.title })),
           status: isSatisfied,
         }),
         headers: {
@@ -217,7 +217,7 @@ const EditNeedScreen = ({ navigation }) => {
             <TagList />
           </View>
           <Button
-            disabled={!header || !body}
+            disabled={!header || !body || state.loading}
             block
             rounded
             style={styles.button}

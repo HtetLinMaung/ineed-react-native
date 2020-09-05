@@ -261,6 +261,7 @@ const styles = StyleSheet.create({
   },
   tag: {
     paddingHorizontal: 0,
+    marginRight: 5,
   },
   username: {
     paddingHorizontal: 7,

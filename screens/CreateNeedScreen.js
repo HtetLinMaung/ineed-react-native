@@ -190,7 +190,7 @@ const CreateNeedScreen = ({ navigation }) => {
             <TagList />
           </View>
           <Button
-            disabled={!header || !body}
+            disabled={!header || !body || state.loading}
             block
             rounded
             style={styles.button}

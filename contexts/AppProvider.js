@@ -26,6 +26,8 @@ const AppProvider = ({ children }) => {
         return { ...state, id: action.payload };
       case "USER_ID":
         return { ...state, userId: action.payload };
+      case "RESET":
+        return { ...state, ...initialState };
       default:
         throw new Error();
     }

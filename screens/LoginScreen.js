@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import {
   View,
   StyleSheet,
@@ -7,7 +7,7 @@ import {
   Image,
   Alert,
 } from "react-native";
-import { Button } from "native-base";
+import { Button, CheckBox } from "native-base";
 import Text from "../components/typography/Text";
 import Colors from "../constants/colors";
 import Spinner from "../components/spinner/Spinner";
@@ -18,11 +18,26 @@ import { useAsyncStorage } from "@react-native-community/async-storage";
 
 const LoginScreen = ({ navigation }) => {
   const { setItem } = useAsyncStorage("user_info");
-  const [, dispatch] = useContext(appContext);
+  const { setItem: setRemember, getItem: getRemember } = useAsyncStorage(
+    "remember_me"
+  );
+  const [state, dispatch] = useContext(appContext);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isEmail, setIsEmail] = useState(true);
   const [isPassword, setIsPassword] = useState(true);
+  const [rememberMe, setRememberMe] = useState(false);
+
+  useEffect(() => {
+    (async () => {
+      const remember_me_json = await getRemember();
+      if (remember_me_json) {
+        const remember_me = JSON.parse(remember_me_json);
+        setEmail(remember_me.email);
+        setPassword(remember_me.password);
+      }
+    })();
+  }, []);
 
   const emailChangeHandler = (text) => {
     setIsEmail(true);
@@ -60,6 +75,14 @@ const LoginScreen = ({ navigation }) => {
           Alert.alert(response.message);
           return;
         }
+        if (rememberMe) {
+          await setRemember(
+            JSON.stringify({
+              email,
+              password,
+            })
+          );
+        }
         const { token, profileImage, username, id } = response;
         dispatch({
           type: "PROFILE_IMAGE",
@@ -96,6 +119,7 @@ const LoginScreen = ({ navigation }) => {
           style={styles.image}
           source={require("../assets/images/sign_in.png")}
         />
+
         <View style={styles.formContainer}>
           <Text style={styles.label}>Email</Text>
           <TextInput
@@ -112,14 +136,19 @@ const LoginScreen = ({ navigation }) => {
             onChangeText={passwordChangeHandler}
             errorLabel="Password must not be empty!"
           />
-          <Button transparent>
-            <Text style={{ ...styles.label, fontSize: 12 }}>
-              Forget Password?
-            </Text>
-          </Button>
+          <View style={styles.rememberContainer}>
+            <CheckBox
+              checked={rememberMe}
+              onPress={() => setRememberMe((state) => !state)}
+              color={Colors.label}
+              style={styles.checkbox}
+            />
+            <Text style={styles.rememberMe}>Remember me</Text>
+          </View>
+
           <View style={styles.buttonContainer}>
             <Button
-              disabled={!email || !password}
+              disabled={!email || !password || state.loading}
               rounded
               block
               style={styles.loginBtn}
@@ -137,6 +166,8 @@ const LoginScreen = ({ navigation }) => {
               <Text style={styles.btnTextSignup}>SignUp</Text>
             </Button>
           </View>
+
+          <Text style={styles.forgetPassword}>Forget Password?</Text>
         </View>
         <Spinner />
       </View>
@@ -150,6 +181,15 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     alignItems: "stretch",
     justifyContent: "center",
+  },
+  rememberMe: {
+    fontSize: 12,
+    paddingLeft: 20,
+  },
+  rememberContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 8,
   },
   header: {
     fontSize: 35,
@@ -189,6 +229,18 @@ const styles = StyleSheet.create({
   buttonContainer: {
     flexDirection: "row",
     justifyContent: "space-around",
+  },
+  forgetPassword: {
+    fontSize: 12,
+    textAlign: "center",
+    marginTop: 10,
+  },
+  checkbox: {
+    transform: [
+      {
+        scale: 0.95,
+      },
+    ],
   },
 });
 

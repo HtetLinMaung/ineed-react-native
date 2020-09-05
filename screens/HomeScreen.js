@@ -16,6 +16,7 @@ import {
 import Spinner from "../components/spinner/Spinner";
 import { useAsyncStorage } from "@react-native-community/async-storage";
 import { loadData } from "../share";
+import openSocket from "socket.io-client";
 
 const HomeScreen = ({ navigation }) => {
   const { setItem } = useAsyncStorage("user_info");
@@ -52,6 +53,10 @@ const HomeScreen = ({ navigation }) => {
   }, [needs]);
 
   useEffect(() => {
+    const socket = openSocket("https://hlm-ineed.herokuapp.com");
+    socket.on("needs", () => {
+      loadData(state, setNeeds, dispatch);
+    });
     loadData(state, setNeeds, dispatch);
   }, []);
 
@@ -71,7 +76,7 @@ const HomeScreen = ({ navigation }) => {
   const logoutHandler = async () => {
     await setItem(JSON.stringify({}));
 
-    dispatch({ type: "TOKEN", payload: "" });
+    dispatch({ type: "RESET", payload: "" });
   };
 
   const tagItem = ({ item, index }) => (

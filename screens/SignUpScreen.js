@@ -16,7 +16,7 @@ import { appContext } from "../contexts/AppProvider";
 import Spinner from "../components/spinner/Spinner";
 
 const SignUpScreen = ({ navigation }) => {
-  const [, dispatch] = useContext(appContext);
+  const [state, dispatch] = useContext(appContext);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
@@ -115,7 +115,9 @@ const SignUpScreen = ({ navigation }) => {
         />
         <View style={styles.btnContainer}>
           <Button
-            disabled={!email || !password || password != confirm}
+            disabled={
+              !email || !password || password != confirm || state.loading
+            }
             rounded
             block
             style={styles.signupBtn}
