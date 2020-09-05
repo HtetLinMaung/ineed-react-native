@@ -15,8 +15,8 @@ import {
 } from "react-native-popup-menu";
 import Spinner from "../components/spinner/Spinner";
 import { useAsyncStorage } from "@react-native-community/async-storage";
-import { loadData } from "../share";
 import openSocket from "socket.io-client";
+import { host } from "../constants/api";
 
 const HomeScreen = ({ navigation }) => {
   const { setItem } = useAsyncStorage("user_info");
@@ -24,6 +24,18 @@ const HomeScreen = ({ navigation }) => {
   const [needs, setNeeds] = useContext(needContext);
   const [tags, setTags] = useState([]);
   const [currentTag, setCurrentTag] = useState(0);
+
+  const loadData = async (showLoading = true) => {
+    if (showLoading) dispatch({ type: "TOGGLE_LOADING" });
+    const response = await fetch(`${host}/needs`, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${state.token}`,
+      },
+    }).then((res) => res.json());
+    if (showLoading) dispatch({ type: "TOGGLE_LOADING" });
+    setNeeds(response.data);
+  };
 
   useEffect(() => {
     let initTags = [
@@ -55,9 +67,9 @@ const HomeScreen = ({ navigation }) => {
   useEffect(() => {
     const socket = openSocket("https://hlm-ineed.herokuapp.com");
     socket.on("needs", () => {
-      loadData(state, setNeeds, dispatch);
+      loadData(false);
     });
-    loadData(state, setNeeds, dispatch);
+    loadData();
   }, []);
 
   const pressHandler = (index) => {
