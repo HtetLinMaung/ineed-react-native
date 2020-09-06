@@ -67,7 +67,7 @@ const HomeScreen = ({ navigation }) => {
   useEffect(() => {
     const socket = openSocket("https://hlm-ineed.herokuapp.com");
     socket.on("needs", () => {
-      loadData(false);
+      loadData();
     });
     loadData();
   }, []);
