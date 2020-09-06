@@ -72,7 +72,7 @@ const LoginScreen = ({ navigation }) => {
         dispatch({ type: "TOGGLE_LOADING" });
         console.log(response);
         if (!response.status) {
-          Alert.alert(response.message);
+          Alert.alert("Something went wrong!", response.message);
           return;
         }
         if (rememberMe) {
