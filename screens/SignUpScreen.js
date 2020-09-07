@@ -72,7 +72,7 @@ const SignUpScreen = ({ navigation }) => {
         }
 
         dispatch({ type: "TOKEN", payload: response.token });
-
+        // TODO => save token to async storage
         navigation.navigate("BasicInfo");
       }
     } catch (err) {
