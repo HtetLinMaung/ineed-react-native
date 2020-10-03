@@ -92,7 +92,10 @@ const CreateNeedScreen = ({ navigation }) => {
           body: JSON.stringify({
             header,
             body,
-            tags,
+            tags: tags.map((tag) => ({
+              title: tag.title,
+              color: tag.color,
+            })),
           }),
           headers: {
             "Content-Type": "application/json",

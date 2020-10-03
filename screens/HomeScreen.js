@@ -25,7 +25,7 @@ const HomeScreen = ({ navigation }) => {
   const [tags, setTags] = useState([]);
   const [currentTag, setCurrentTag] = useState(0);
 
-  const loadData = async (showLoading = true) => {
+  const loadData = async () => {
     dispatch({ type: "SET_LOADING", payload: true });
     const response = await fetch(`${api}/needs`, {
       headers: {
