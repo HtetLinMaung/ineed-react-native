@@ -11,7 +11,7 @@ import { Button, CheckBox } from "native-base";
 import Text from "../components/typography/Text";
 import Colors from "../constants/colors";
 import Spinner from "../components/spinner/Spinner";
-import { host } from "../constants/api";
+import { api, host } from "../constants/api";
 import { appContext } from "../contexts/AppProvider";
 import TextInput from "../components/form/TextInput";
 import { useAsyncStorage } from "@react-native-community/async-storage";
@@ -58,8 +58,8 @@ const LoginScreen = ({ navigation }) => {
   const loginHandler = async () => {
     try {
       if (email && password) {
-        dispatch({ type: "TOGGLE_LOADING" });
-        const response = await fetch(`${host}/auth/login`, {
+        dispatch({ type: "SET_LOADING", payload: true });
+        const response = await fetch(`${api}/auth/login`, {
           method: "POST",
           body: JSON.stringify({
             email,
@@ -69,14 +69,14 @@ const LoginScreen = ({ navigation }) => {
             "Content-Type": "application/json",
           },
         }).then((res) => res.json());
-        dispatch({ type: "TOGGLE_LOADING" });
+        dispatch({ type: "SET_LOADING", payload: false });
         console.log(response);
         if (!response.status) {
           Alert.alert("Something went wrong!", response.message);
           return;
         }
         if (rememberMe) {
-          await setRemember(
+          setRemember(
             JSON.stringify({
               email,
               password,
@@ -86,18 +86,14 @@ const LoginScreen = ({ navigation }) => {
         const { token, profileImage, username, id } = response;
         dispatch({
           type: "PROFILE_IMAGE",
-          payload: profileImage
-            ? `https://hlm-ineed.herokuapp.com/${profileImage}`
-            : "",
+          payload: profileImage ? `${host}/${profileImage}` : "",
         });
         dispatch({ type: "USERNAME", payload: username });
         dispatch({ type: "TOKEN", payload: token });
         dispatch({ type: "USER_ID", payload: id });
         setItem(
           JSON.stringify({
-            profileImage: profileImage
-              ? `https://hlm-ineed.herokuapp.com/${profileImage}`
-              : "",
+            profileImage: profileImage ? `${host}/${profileImage}` : "",
             username,
             token,
             userId: id,

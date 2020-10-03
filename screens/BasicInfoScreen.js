@@ -13,7 +13,7 @@ import Text from "../components/typography/Text";
 import Colors from "../constants/colors";
 import TextInput from "../components/form/TextInput";
 import { appContext } from "../contexts/AppProvider";
-import { host } from "../constants/api";
+import { api } from "../constants/api";
 import Spinner from "../components/spinner/Spinner";
 import { useAsyncStorage } from "@react-native-community/async-storage";
 
@@ -63,7 +63,7 @@ const BasicInfoScreen = ({ navigation }) => {
       formData.append("profileImage", profileImage);
       formData.append("username", state.username);
       dispatch({ type: "TOGGLE_LOADING" });
-      const response = await fetch(`${host}/auth/edit-profile`, {
+      const response = await fetch(`${api}/auth/edit-profile`, {
         method: "PUT",
         body: formData,
         headers: {

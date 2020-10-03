@@ -13,7 +13,7 @@ import Tag from "../components/tag/Tag";
 import TextInput from "../components/form/TextInput";
 import Colors from "../constants/colors";
 import { appContext } from "../contexts/AppProvider";
-import { host } from "../constants/api";
+import { api } from "../constants/api";
 import Spinner from "../components/spinner/Spinner";
 
 const CreateNeedScreen = ({ navigation }) => {
@@ -87,7 +87,7 @@ const CreateNeedScreen = ({ navigation }) => {
     try {
       if (header && body) {
         dispatch({ type: "TOGGLE_LOADING" });
-        const response = await fetch(`${host}/needs`, {
+        const response = await fetch(`${api}/needs`, {
           method: "POST",
           body: JSON.stringify({
             header,

@@ -1,7 +1,6 @@
-import React, { Fragment } from "react";
+import React from "react";
 import AppProvider from "./contexts/AppProvider";
 import NeedProvider from "./contexts/NeedProvider";
-import { StyleSheet } from "react-native";
 import { AppLoading } from "expo";
 import { useFonts } from "expo-font";
 import Navigator from "./components/Navigator";
@@ -31,9 +30,3 @@ export default function App() {
     </AppProvider>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-});

@@ -17,7 +17,7 @@ import Colors from "../../constants/colors";
 import RBSheet from "react-native-raw-bottom-sheet";
 import { useNavigation } from "@react-navigation/native";
 import { appContext } from "../../contexts/AppProvider";
-import { host } from "../../constants/api";
+import { api } from "../../constants/api";
 import { needContext } from "../../contexts/NeedProvider";
 
 const NeedCard = ({ item }) => {
@@ -73,7 +73,7 @@ const NeedCard = ({ item }) => {
               onPress: async () => {
                 try {
                   dispatch({ type: "TOGGLE_LOADING" });
-                  await fetch(`${host}/needs/${state.id}`, {
+                  await fetch(`${api}/needs/${state.id}`, {
                     method: "DELETE",
                     headers: {
                       "Content-Type": "application/json",

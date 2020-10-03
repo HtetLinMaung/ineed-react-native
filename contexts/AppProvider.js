@@ -14,6 +14,8 @@ const initialState = {
 const AppProvider = ({ children }) => {
   const reducer = (state, action) => {
     switch (action.type) {
+      case "SET_LOADING":
+        return { ...state, loading: action.payload };
       case "TOGGLE_LOADING":
         return { ...state, loading: !state.loading };
       case "TOKEN":

@@ -11,7 +11,7 @@ import { Button } from "native-base";
 import Text from "../components/typography/Text";
 import Colors from "../constants/colors";
 import TextInput from "../components/form/TextInput";
-import { host } from "../constants/api";
+import { api } from "../constants/api";
 import { appContext } from "../contexts/AppProvider";
 import Spinner from "../components/spinner/Spinner";
 
@@ -54,7 +54,7 @@ const SignUpScreen = ({ navigation }) => {
     try {
       if (email && password && password == confirm) {
         dispatch({ type: "TOGGLE_LOADING" });
-        const response = await fetch(`${host}/auth/signup`, {
+        const response = await fetch(`${api}/auth/signup`, {
           method: "PUT",
           body: JSON.stringify({
             email,

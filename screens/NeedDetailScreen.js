@@ -11,7 +11,7 @@ import {
   MenuTrigger,
 } from "react-native-popup-menu";
 import { appContext } from "../contexts/AppProvider";
-import { host } from "../constants/api";
+import { api } from "../constants/api";
 import Spinner from "../components/spinner/Spinner";
 import moment from "moment";
 
@@ -26,7 +26,7 @@ const NeedDetailScreen = ({ navigation }) => {
   useEffect(() => {
     (async () => {
       dispatch({ type: "TOGGLE_LOADING" });
-      const response = await fetch(`${host}/needs/${state.id}`, {
+      const response = await fetch(`${api}/needs/${state.id}`, {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${state.token}`,
@@ -62,7 +62,7 @@ const NeedDetailScreen = ({ navigation }) => {
           onPress: async () => {
             try {
               dispatch({ type: "TOGGLE_LOADING" });
-              await fetch(`${host}/needs/${state.id}`, {
+              await fetch(`${api}/needs/${state.id}`, {
                 method: "DELETE",
                 headers: {
                   "Content-Type": "application/json",

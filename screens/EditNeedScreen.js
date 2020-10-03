@@ -11,7 +11,7 @@ import Text from "../components/typography/Text";
 import Tag from "../components/tag/Tag";
 import Colors from "../constants/colors";
 import { appContext } from "../contexts/AppProvider";
-import { host } from "../constants/api";
+import { api } from "../constants/api";
 import { ScrollView } from "react-native-gesture-handler";
 import TextInput from "../components/form/TextInput";
 import Spinner from "../components/spinner/Spinner";
@@ -33,7 +33,7 @@ const EditNeedScreen = ({ navigation }) => {
   useEffect(() => {
     (async () => {
       dispatch({ type: "TOGGLE_LOADING" });
-      const response = await fetch(`${host}/needs/${state.id}`, {
+      const response = await fetch(`${api}/needs/${state.id}`, {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${state.token}`,
@@ -105,7 +105,7 @@ const EditNeedScreen = ({ navigation }) => {
   const updateHandler = async () => {
     try {
       dispatch({ type: "TOGGLE_LOADING" });
-      const response = await fetch(`${host}/needs/${state.id}`, {
+      const response = await fetch(`${api}/needs/${state.id}`, {
         method: "PUT",
         body: JSON.stringify({
           header,

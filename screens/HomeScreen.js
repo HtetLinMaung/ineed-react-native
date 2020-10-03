@@ -16,7 +16,7 @@ import {
 import Spinner from "../components/spinner/Spinner";
 import { useAsyncStorage } from "@react-native-community/async-storage";
 import openSocket from "socket.io-client";
-import { host } from "../constants/api";
+import { api } from "../constants/api";
 
 const HomeScreen = ({ navigation }) => {
   const { setItem } = useAsyncStorage("user_info");
@@ -26,14 +26,20 @@ const HomeScreen = ({ navigation }) => {
   const [currentTag, setCurrentTag] = useState(0);
 
   const loadData = async (showLoading = true) => {
-    if (showLoading) dispatch({ type: "TOGGLE_LOADING" });
-    const response = await fetch(`${host}/needs`, {
+    dispatch({ type: "SET_LOADING", payload: true });
+    const response = await fetch(`${api}/needs`, {
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${state.token}`,
       },
     }).then((res) => res.json());
-    if (showLoading) dispatch({ type: "TOGGLE_LOADING" });
+    dispatch({ type: "SET_LOADING", payload: false });
+    console.log(response);
+    if (!response.status && response.message == "jwt expired") {
+      logoutHandler();
+      return;
+    }
+
     setNeeds(response.data);
   };
 
@@ -45,6 +51,7 @@ const HomeScreen = ({ navigation }) => {
         active: true,
       },
     ];
+
     needs.forEach((need) => {
       initTags = [
         ...initTags,
@@ -174,7 +181,6 @@ const HomeScreen = ({ navigation }) => {
 
 const paddingHorizontal = 20;
 const size = 22;
-const radius = 15;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
