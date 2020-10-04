@@ -11,7 +11,7 @@ import {
   MenuTrigger,
 } from "react-native-popup-menu";
 import { appContext } from "../contexts/AppProvider";
-import { api } from "../constants/api";
+import { api, host } from "../constants/api";
 import Spinner from "../components/spinner/Spinner";
 import moment from "moment";
 
@@ -25,14 +25,14 @@ const NeedDetailScreen = ({ navigation }) => {
 
   useEffect(() => {
     (async () => {
-      dispatch({ type: "TOGGLE_LOADING" });
+      dispatch({ type: "SET_LOADING", payload: true });
       const response = await fetch(`${api}/needs/${state.id}`, {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${state.token}`,
         },
       }).then((res) => res.json());
-      dispatch({ type: "TOGGLE_LOADING" });
+      dispatch({ type: "SET_LOADING", payload: false });
       console.log(response);
       const { createdAt, body, header, tags, user } = response.data;
       setDate(createdAt);
@@ -104,7 +104,7 @@ const NeedDetailScreen = ({ navigation }) => {
         <Image
           style={styles.avatar}
           source={{
-            uri: `https://hlm-ineed.herokuapp.com/${user.profileImage}`,
+            uri: `${host}/${user.profileImage}`,
             width: 30,
             height: 30,
           }}
@@ -122,30 +122,33 @@ const NeedDetailScreen = ({ navigation }) => {
       <Tag key={i} title={tag.title} color={tag.color} active />
     ));
 
-  return (
-    <ScrollView style={styles.container}>
-      <View style={styles.dateContainer}>
-        <Text style={styles.date}>
-          {date ? moment(date).format("MMMM DD, YYYY") : ""}
-        </Text>
-        <MenuComponent />
-      </View>
-      <Text style={styles.header}>{header}</Text>
-      <View style={styles.tagContainer}>
-        <TagList />
-      </View>
-      <View style={styles.profileContainer}>
-        <ImageComponent />
-        <Text style={styles.username}>{user && user.username}</Text>
-      </View>
-      <Text style={styles.body}>{body}</Text>
-      <Spinner style={styles.spinner} />
-    </ScrollView>
-  );
+  const RenderComponent = () =>
+    state.loading ? (
+      <Spinner />
+    ) : (
+      <ScrollView style={styles.container}>
+        <View style={styles.dateContainer}>
+          <Text style={styles.date}>
+            {date ? moment(date).format("MMMM DD, YYYY") : ""}
+          </Text>
+          <MenuComponent />
+        </View>
+        <Text style={styles.header}>{header}</Text>
+        <View style={styles.tagContainer}>
+          <TagList />
+        </View>
+        <View style={styles.profileContainer}>
+          <ImageComponent />
+          <Text style={styles.username}>{user && user.username}</Text>
+        </View>
+        <Text style={styles.body}>{body}</Text>
+      </ScrollView>
+    );
+
+  return <RenderComponent />;
 };
 
 const optionsStyles = {
-  spinner: {},
   optionsContainer: {
     padding: 5,
     borderRadius: 15,
@@ -170,7 +173,6 @@ const styles = StyleSheet.create({
   body: {
     marginVertical: 20,
     fontSize: 16,
-    marginBottom: 500,
   },
   tagContainer: {
     flexDirection: "row",

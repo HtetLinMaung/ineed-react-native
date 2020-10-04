@@ -14,7 +14,7 @@ import Text from "../components/typography/Text";
 import Colors from "../constants/colors";
 import TextInput from "../components/form/TextInput";
 import { appContext } from "../contexts/AppProvider";
-import { api } from "../constants/api";
+import { api, host } from "../constants/api";
 import Spinner from "../components/spinner/Spinner";
 import { useAsyncStorage } from "@react-native-community/async-storage";
 
@@ -72,7 +72,7 @@ const EditProfileScreen = ({ navigation }) => {
 
       formData.append("profileImage", profileImage);
       formData.append("username", state.username);
-      dispatch({ type: "TOGGLE_LOADING" });
+      dispatch({ type: "SET_LOADING", payload: true });
       const response = await fetch(`${api}/auth/edit-profile`, {
         method: "PUT",
         body: formData,
@@ -82,7 +82,7 @@ const EditProfileScreen = ({ navigation }) => {
           Authorization: `Bearer ${state.token}`,
         },
       }).then((res) => res.json());
-      dispatch({ type: "TOGGLE_LOADING" });
+      dispatch({ type: "SET_LOADING", payload: false });
       console.log(response);
 
       if (!response.status) {
@@ -92,7 +92,7 @@ const EditProfileScreen = ({ navigation }) => {
       const { profileImage: image, username } = response.data;
       dispatch({
         type: "PROFILE_IMAGE",
-        payload: image ? `https://hlm-ineed.herokuapp.com/${image}` : "",
+        payload: image ? `${host}/${image}` : "",
       });
       dispatch({ type: "USERNAME", payload: username });
       const user_info_json = await getItem();
@@ -101,9 +101,7 @@ const EditProfileScreen = ({ navigation }) => {
         await setItem(
           JSON.stringify({
             ...user_info,
-            profileImage: image
-              ? `https://hlm-ineed.herokuapp.com/${image}`
-              : "",
+            profileImage: image ? `${host}/${image}` : "",
             username,
           })
         );

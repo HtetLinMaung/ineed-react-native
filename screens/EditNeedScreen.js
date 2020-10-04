@@ -32,14 +32,14 @@ const EditNeedScreen = ({ navigation }) => {
 
   useEffect(() => {
     (async () => {
-      dispatch({ type: "TOGGLE_LOADING" });
+      dispatch({ type: "SET_LOADING", payload: true });
       const response = await fetch(`${api}/needs/${state.id}`, {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${state.token}`,
         },
       }).then((res) => res.json());
-      dispatch({ type: "TOGGLE_LOADING" });
+      dispatch({ type: "SET_LOADING", payload: false });
       console.log(response);
       setHeader(response.data.header);
       setBody(response.data.body);
@@ -104,7 +104,7 @@ const EditNeedScreen = ({ navigation }) => {
 
   const updateHandler = async () => {
     try {
-      dispatch({ type: "TOGGLE_LOADING" });
+      dispatch({ type: "SET_LOADING", payload: true });
       const response = await fetch(`${api}/needs/${state.id}`, {
         method: "PUT",
         body: JSON.stringify({
@@ -118,7 +118,7 @@ const EditNeedScreen = ({ navigation }) => {
           Authorization: `Bearer ${state.token}`,
         },
       }).then((res) => res.json());
-      dispatch({ type: "TOGGLE_LOADING" });
+      dispatch({ type: "SET_LOADING", payload: false });
       console.log(response);
 
       navigation.navigate("Home");

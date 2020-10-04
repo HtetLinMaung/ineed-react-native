@@ -86,7 +86,7 @@ const CreateNeedScreen = ({ navigation }) => {
   const saveHandler = async () => {
     try {
       if (header && body) {
-        dispatch({ type: "TOGGLE_LOADING" });
+        dispatch({ type: "SET_LOADING", payload: true });
         const response = await fetch(`${api}/needs`, {
           method: "POST",
           body: JSON.stringify({
@@ -102,7 +102,7 @@ const CreateNeedScreen = ({ navigation }) => {
             Authorization: `Bearer ${state.token}`,
           },
         }).then((res) => res.json());
-        dispatch({ type: "TOGGLE_LOADING" });
+        dispatch({ type: "SET_LOADING", payload: false });
         console.log(response);
         navigation.navigate("Home");
       }
