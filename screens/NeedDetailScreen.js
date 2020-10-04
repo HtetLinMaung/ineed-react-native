@@ -61,7 +61,7 @@ const NeedDetailScreen = ({ navigation }) => {
           text: "OK",
           onPress: async () => {
             try {
-              dispatch({ type: "TOGGLE_LOADING" });
+              dispatch({ type: "SET_LOADING", payload: true });
               await fetch(`${api}/needs/${state.id}`, {
                 method: "DELETE",
                 headers: {
@@ -69,7 +69,7 @@ const NeedDetailScreen = ({ navigation }) => {
                   Authorization: `Bearer ${state.token}`,
                 },
               });
-              dispatch({ type: "TOGGLE_LOADING" });
+              dispatch({ type: "SET_LOADING", payload: false });
               navigation.navigate("Home");
             } catch (err) {
               console.log(err);
