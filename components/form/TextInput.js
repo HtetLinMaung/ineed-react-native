@@ -12,13 +12,7 @@ const TextInput = (props) => {
     ) : null;
 
   return (
-    <View
-      style={[
-        styles.wrapper,
-        props.wrapperStyle,
-        { marginBottom: !props.state ? 0 : 20 },
-      ]}
-    >
+    <View style={[props.wrapperStyle, { marginBottom: !props.state ? 0 : 20 }]}>
       <Item
         regular
         style={[
@@ -47,7 +41,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     marginTop: 5,
   },
-  wrapper: {},
 });
 
 TextInput.propTypes = {

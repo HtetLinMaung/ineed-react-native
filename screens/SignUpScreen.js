@@ -53,7 +53,7 @@ const SignUpScreen = ({ navigation }) => {
   const signupHandler = async () => {
     try {
       if (email && password && password == confirm) {
-        dispatch({ type: "TOGGLE_LOADING" });
+        dispatch({ type: "SET_LOADING", payload: true });
         const response = await fetch(`${api}/auth/signup`, {
           method: "PUT",
           body: JSON.stringify({
@@ -64,7 +64,7 @@ const SignUpScreen = ({ navigation }) => {
             "Content-Type": "application/json",
           },
         }).then((res) => res.json());
-        dispatch({ type: "TOGGLE_LOADING" });
+        dispatch({ type: "SET_LOADING", payload: false });
         console.log(response);
         if (!response.status) {
           Alert.alert(response.message);

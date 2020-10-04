@@ -17,7 +17,7 @@ import Colors from "../../constants/colors";
 import RBSheet from "react-native-raw-bottom-sheet";
 import { useNavigation } from "@react-navigation/native";
 import { appContext } from "../../contexts/AppProvider";
-import { api } from "../../constants/api";
+import { api, host } from "../../constants/api";
 import { needContext } from "../../contexts/NeedProvider";
 
 const NeedCard = ({ item }) => {
@@ -154,7 +154,7 @@ const NeedCard = ({ item }) => {
       <Image
         style={styles.avatar}
         source={{
-          uri: `https://hlm-ineed.herokuapp.com/${item.user.profileImage}`,
+          uri: `${host}/${item.user.profileImage}`,
           width: 30,
           height: 30,
         }}
@@ -245,7 +245,6 @@ const styles = StyleSheet.create({
     height: 160,
     overflow: "hidden",
   },
-  cardFooter: {},
   header: {
     fontSize: 18,
     marginBottom: 10,
