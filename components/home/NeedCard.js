@@ -47,6 +47,31 @@ const NeedCard = ({ item }) => {
       },
     },
     {
+      icon: "ios-checkmark-circle",
+      text: "Satisfy",
+      onPress: async () => {
+        try {
+          refRBSheet.current.close();
+          dispatch({ type: "SET_LOADING", payload: true });
+          const response = await fetch(`${api}/needs/${state.id}`, {
+            method: "PUT",
+            body: JSON.stringify({
+              ...item,
+              status: true,
+            }),
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${state.token}`,
+            },
+          }).then((res) => res.json());
+          dispatch({ type: "SET_LOADING", payload: false });
+          console.log(response);
+        } catch (err) {
+          console.log(err);
+        }
+      },
+    },
+    {
       icon: "ios-color-fill",
       text: "Edit",
       onPress: () => {
